@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{e942e6c0-aecc-4300-82f9-8604528abb4a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\Core">
+      <UniqueIdentifier>{671fa10f-54c9-4cba-bbd2-fe66e1b82757}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\App">
+      <UniqueIdentifier>{c557d7b9-8c25-47b3-b3c5-cb10eed3b539}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{6005458c-0321-414e-a064-4ab81fe0c620}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\App">
+      <UniqueIdentifier>{6a8b6dc7-fd9b-47b8-9ea7-cd29e923fa53}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Core">
+      <UniqueIdentifier>{8d565f2f-5159-49b2-91cd-cc93b0c1f192}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Shaders">
+      <UniqueIdentifier>{002822d3-ce69-48d0-8103-a988cb18c2b6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\App\main.cpp">
+      <Filter>src\App</Filter>
+    </ClCompile>
+    <ClCompile Include="src\App\Window.cpp">
+      <Filter>src\App</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\D3DDevice.cpp">
+      <Filter>src\Core</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\Core\D3DUtil.h">
+      <Filter>include\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\App\Window.h">
+      <Filter>include\App</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\D3DDevice.h">
+      <Filter>include\Core</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
