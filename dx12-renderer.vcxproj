@@ -21,10 +21,12 @@
   <ItemGroup>
     <ClCompile Include="src\App\main.cpp" />
     <ClCompile Include="src\App\Window.cpp" />
+    <ClCompile Include="src\Core\CommandQueue.cpp" />
     <ClCompile Include="src\Core\D3DDevice.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\App\Window.h" />
+    <ClInclude Include="include\Core\CommandQueue.h" />
     <ClInclude Include="include\Core\D3DDevice.h" />
     <ClInclude Include="include\Core\D3DUtil.h" />
   </ItemGroup>

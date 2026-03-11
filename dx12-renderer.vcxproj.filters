@@ -33,6 +33,9 @@
     <ClCompile Include="src\Core\D3DDevice.cpp">
       <Filter>src\Core</Filter>
     </ClCompile>
+    <ClCompile Include="src\Core\CommandQueue.cpp">
+      <Filter>src\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Core\D3DUtil.h">
@@ -42,6 +45,9 @@
       <Filter>include\App</Filter>
     </ClInclude>
     <ClInclude Include="include\Core\D3DDevice.h">
+      <Filter>include\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\CommandQueue.h">
       <Filter>include\Core</Filter>
     </ClInclude>
   </ItemGroup>

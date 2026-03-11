@@ -4,6 +4,7 @@
 
 #include "App/Window.h"
 #include "Core/D3DDevice.h"
+#include "Core/CommandQueue.h"
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
 {
@@ -20,10 +21,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
         D3DDevice device;
         device.Initialize();
 
+        CommandQueue commandQueue;
+        commandQueue.Initialize(device.GetDevice());
+
         while (window.ProcessMessages())
         {
             
         }
+
+        commandQueue.Shutdown();
     }
     catch (const std::exception& e)
     {
