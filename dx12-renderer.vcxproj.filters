@@ -36,6 +36,12 @@
     <ClCompile Include="src\Core\CommandQueue.cpp">
       <Filter>src\Core</Filter>
     </ClCompile>
+    <ClCompile Include="src\Core\CommandList.cpp">
+      <Filter>src\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\SwapChain.cpp">
+      <Filter>src\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Core\D3DUtil.h">
@@ -48,6 +54,12 @@
       <Filter>include\Core</Filter>
     </ClInclude>
     <ClInclude Include="include\Core\CommandQueue.h">
+      <Filter>include\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\CommandList.h">
+      <Filter>include\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\SwapChain.h">
       <Filter>include\Core</Filter>
     </ClInclude>
   </ItemGroup>

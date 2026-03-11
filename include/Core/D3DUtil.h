@@ -44,3 +44,7 @@ using Microsoft::WRL::ComPtr;
         }                                                           \
     } while(0)
 #endif
+
+// ─── 프레임 리소스 상수 ───
+// 트리플 버퍼링 : GPU가 프레임 N을 렌더링하는 동안 CPU는 프레임 N+1, N+2를 준비할 수 있음.
+static constexpr UINT FRAME_BUFFER_COUNT = 3;
