@@ -115,8 +115,8 @@ void SwapChain::CreateDepthBuffer(ID3D12Device* device, int width, int height)
 void SwapChain::Present(bool vsync)
 {
     // Present
-    // vsync=true → SyncInterval=1 (모니터 주사율에 맞춤)
-    // vsync=false → SyncInterval=0 + TEARING (무제한 FPS)
+    // vsync=true -> SyncInterval=1 (모니터 주사율에 맞춤)
+    // vsync=false -> SyncInterval=0 + TEARING (무제한 FPS)
     UINT syncInterval = vsync ? 1 : 0;
     UINT flags        = vsync ? 0 : DXGI_PRESENT_ALLOW_TEARING;
     ThrowIfFailed(m_swapChain->Present(syncInterval, flags));

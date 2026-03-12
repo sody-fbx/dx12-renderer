@@ -10,7 +10,7 @@ struct VSInput
     float4 color    : COLOR;
 };
 
-// 정점 셰이더 → 픽셀 셰이더 전달 구조체
+// 정점 셰이더 -> 픽셀 셰이더 전달 구조체
 struct VSOutput
 {
     float4 position : SV_POSITION;
