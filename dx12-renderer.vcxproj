@@ -24,6 +24,8 @@
     <ClCompile Include="src\Core\CommandList.cpp" />
     <ClCompile Include="src\Core\CommandQueue.cpp" />
     <ClCompile Include="src\Core\D3DDevice.cpp" />
+    <ClCompile Include="src\Core\PipelineState.cpp" />
+    <ClCompile Include="src\Core\RootSignature.cpp" />
     <ClCompile Include="src\Core\SwapChain.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -32,7 +34,14 @@
     <ClInclude Include="include\Core\CommandQueue.h" />
     <ClInclude Include="include\Core\D3DDevice.h" />
     <ClInclude Include="include\Core\D3DUtil.h" />
+    <ClInclude Include="include\Core\PipelineState.h" />
+    <ClInclude Include="include\Core\RootSignature.h" />
     <ClInclude Include="include\Core\SwapChain.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="src\Shaders\Triangle.hlsl">
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VSMain</EntryPointName>
+    </FxCompile>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

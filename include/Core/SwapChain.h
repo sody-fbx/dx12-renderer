@@ -9,8 +9,12 @@
 class SwapChain
 {
 public:
-    void Initialize(IDXGIFactory4* factory, ID3D12CommandQueue* queue,
-                    ID3D12Device* device, HWND hwnd, int width, int height);
+    void Initialize( IDXGIFactory4* factory
+                   , ID3D12CommandQueue* queue
+                   , ID3D12Device* device
+                   , HWND hwnd
+                   , int width
+                   , int height );
 
     void Present(bool vsync);
     void Resize(ID3D12Device* device, int width, int height);

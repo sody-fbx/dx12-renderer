@@ -4,8 +4,11 @@
 
 #include "Core/SwapChain.h"
 
-void SwapChain::Initialize(IDXGIFactory4* factory, ID3D12CommandQueue* queue,
-                            ID3D12Device* device, HWND hwnd, int width, int height)
+void SwapChain::Initialize( IDXGIFactory4* factory
+                          , ID3D12CommandQueue* queue
+                          , ID3D12Device* device
+                          , HWND hwnd
+                          , int width, int height)
 {
     // SwapChain 생성
     DXGI_SWAP_CHAIN_DESC1 desc = {};
