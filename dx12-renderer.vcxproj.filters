@@ -51,6 +51,9 @@
     <ClCompile Include="src\Core\Renderer.cpp">
       <Filter>src\Core</Filter>
     </ClCompile>
+    <ClCompile Include="src\App\Timer.cpp">
+      <Filter>src\App</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Core\D3DUtil.h">
@@ -79,6 +82,9 @@
     </ClInclude>
     <ClInclude Include="include\Core\Renderer.h">
       <Filter>include\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\App\Timer.h">
+      <Filter>include\App</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

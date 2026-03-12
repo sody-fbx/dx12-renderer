@@ -4,6 +4,7 @@
 
 #include "App/Window.h"
 #include "Core/Renderer.h"
+#include "App/Timer.h"
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
 {
@@ -26,10 +27,23 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
             renderer.OnResize(w, h);
         };
 
+        // 3. 타이머 초기화
+        Timer timer;
+        timer.Initialize();
+
         // 4. Main Loop
         while (window.ProcessMessages())
         {
+            timer.Tick();
             renderer.Render();
+
+            // 타이틀바에 FPS 표시
+            if (timer.FPS() > 0)
+            {
+                std::wstring title = L"DX12 Renderer — FPS: "
+                                   + std::to_wstring(timer.FPS());
+                SetWindowText(window.GetHWND(), title.c_str());
+            }
         }
 
         // 5. 종료
