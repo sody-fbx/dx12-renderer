@@ -22,6 +22,9 @@
     <Filter Include="src\Shaders">
       <UniqueIdentifier>{002822d3-ce69-48d0-8103-a988cb18c2b6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\Resource">
+      <UniqueIdentifier>{6db0bd46-1a8d-4a85-ae44-78b9465ec7d5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\App\main.cpp">
@@ -85,6 +88,15 @@
     </ClInclude>
     <ClInclude Include="include\App\Timer.h">
       <Filter>include\App</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Resource\FrameResource.h">
+      <Filter>include\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Resource\UploadBuffer.h">
+      <Filter>include\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\MathHelper.h">
+      <Filter>include\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

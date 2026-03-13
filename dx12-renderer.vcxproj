@@ -37,10 +37,13 @@
     <ClInclude Include="include\Core\CommandQueue.h" />
     <ClInclude Include="include\Core\D3DDevice.h" />
     <ClInclude Include="include\Core\D3DUtil.h" />
+    <ClInclude Include="include\Core\MathHelper.h" />
     <ClInclude Include="include\Core\PipelineState.h" />
     <ClInclude Include="include\Core\Renderer.h" />
     <ClInclude Include="include\Core\RootSignature.h" />
     <ClInclude Include="include\Core\SwapChain.h" />
+    <ClInclude Include="include\Resource\FrameResource.h" />
+    <ClInclude Include="include\Resource\UploadBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="src\Shaders\Triangle.hlsl">
