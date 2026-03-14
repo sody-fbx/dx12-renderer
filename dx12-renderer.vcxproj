@@ -29,6 +29,8 @@
     <ClCompile Include="src\Core\Renderer.cpp" />
     <ClCompile Include="src\Core\RootSignature.cpp" />
     <ClCompile Include="src\Core\SwapChain.cpp" />
+    <ClCompile Include="src\Resource\GeometryGenerator.cpp" />
+    <ClCompile Include="src\Resource\Mesh.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\App\Timer.h" />
@@ -43,7 +45,10 @@
     <ClInclude Include="include\Core\RootSignature.h" />
     <ClInclude Include="include\Core\SwapChain.h" />
     <ClInclude Include="include\Resource\FrameResource.h" />
+    <ClInclude Include="include\Resource\GeometryGenerator.h" />
+    <ClInclude Include="include\Resource\Mesh.h" />
     <ClInclude Include="include\Resource\UploadBuffer.h" />
+    <ClInclude Include="include\Resource\Vertex.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="src\Shaders\Triangle.hlsl">

@@ -25,6 +25,9 @@
     <Filter Include="include\Resource">
       <UniqueIdentifier>{6db0bd46-1a8d-4a85-ae44-78b9465ec7d5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Resource">
+      <UniqueIdentifier>{0eb736c0-6403-4d83-b907-65c47c65ae79}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\App\main.cpp">
@@ -56,6 +59,12 @@
     </ClCompile>
     <ClCompile Include="src\App\Timer.cpp">
       <Filter>src\App</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Resource\GeometryGenerator.cpp">
+      <Filter>src\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Resource\Mesh.cpp">
+      <Filter>src\Resource</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -97,6 +106,15 @@
     </ClInclude>
     <ClInclude Include="include\Core\MathHelper.h">
       <Filter>include\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Resource\GeometryGenerator.h">
+      <Filter>include\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Resource\Mesh.h">
+      <Filter>include\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Resource\Vertex.h">
+      <Filter>include\Resource</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

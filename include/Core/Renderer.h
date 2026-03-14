@@ -11,6 +11,8 @@
 #include "Core/RootSignature.h"
 #include "Core/PipelineState.h"
 
+#include "Resource/Mesh.h"
+
 class Renderer
 {
 public:
@@ -35,8 +37,7 @@ private:
     PipelineState  m_pso;
 
     // TEST : Geometry
-    ComPtr<ID3D12Resource> m_vertexBuffer;
-    D3D12_VERTEX_BUFFER_VIEW m_vbView = {};
+    std::unique_ptr<Mesh>    m_mesh;
 
     // 프레임 동기화
     std::array<UINT64, FRAME_BUFFER_COUNT> m_frameFenceValues = {};

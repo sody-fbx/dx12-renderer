@@ -24,6 +24,7 @@
 #include <array>
 #include <stdexcept>
 #include <cassert>
+#include <unordered_map>
 
 // ─── ComPtr 별칭 ───
 // DX12의 COM 오브젝트는 수동 Release 대신 ComPtr로 관리.

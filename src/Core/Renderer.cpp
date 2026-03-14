@@ -3,12 +3,7 @@
 // ═══════════════════════════════════════════════════════════════════
 
 #include "Core/Renderer.h"
-
-struct Vertex
-{
-    DirectX::XMFLOAT3 position;
-    DirectX::XMFLOAT4 color;
-};
+#include "Resource/GeometryGenerator.h"
 
 void Renderer::Initialize(HWND hwnd, int width, int height)
 {
@@ -43,47 +38,21 @@ void Renderer::Initialize(HWND hwnd, int width, int height)
 void Renderer::BuildTriangleGeometry()
 {
     // ── TEST : 삼각형 그리기 ──
-    Vertex vertices[] =
-    {
-        { {  0.0f,  0.5f, 0.0f }, { 1.0f, 0.0f, 0.0f, 1.0f } },  // 상단 (빨강)
-        { {  0.5f, -0.5f, 0.0f }, { 0.0f, 1.0f, 0.0f, 1.0f } },  // 우하 (초록)
-        { { -0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f, 1.0f } },  // 좌하 (파랑)
-    };
-    const UINT vbSize = sizeof(vertices);
+    auto triangleData = GeometryGenerator::CreateTriangle();
 
-    D3D12_HEAP_PROPERTIES heapProps = {};
-    heapProps.Type = D3D12_HEAP_TYPE_UPLOAD;
+    m_commandList.Reset(0, nullptr);
+    auto cmdList = m_commandList.Get();
 
-    D3D12_RESOURCE_DESC bufferDesc = {};
-    bufferDesc.Dimension        = D3D12_RESOURCE_DIMENSION_BUFFER;
-    bufferDesc.Width            = vbSize;
-    bufferDesc.Height           = 1;
-    bufferDesc.DepthOrArraySize = 1;
-    bufferDesc.MipLevels        = 1;
-    bufferDesc.SampleDesc       = { 1, 0 };
-    bufferDesc.Layout           = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+    m_mesh = std::make_unique<Mesh>();
+    m_mesh->Create( m_device.GetDevice()
+                 , cmdList
+                 , triangleData.Vertices.data(), (UINT)triangleData.Vertices.size(), sizeof(VertexCol)
+                 , triangleData.Indices.data(), (UINT)triangleData.Indices.size(), DXGI_FORMAT_R32_UINT
+                 );
 
-    ThrowIfFailed(
-        m_device.GetDevice()->CreateCommittedResource(
-            &heapProps,
-            D3D12_HEAP_FLAG_NONE,
-            &bufferDesc,
-            D3D12_RESOURCE_STATE_GENERIC_READ,
-            nullptr,
-            IID_PPV_ARGS(&m_vertexBuffer)
-        )
-    );
-
-    // 정점 데이터 복사
-    void* mappedData = nullptr;
-    ThrowIfFailed(m_vertexBuffer->Map(0, nullptr, &mappedData));
-    memcpy(mappedData, vertices, vbSize);
-    m_vertexBuffer->Unmap(0, nullptr);
-
-    // Vertex Buffer View 생성
-    m_vbView.BufferLocation = m_vertexBuffer->GetGPUVirtualAddress();
-    m_vbView.SizeInBytes    = vbSize;
-    m_vbView.StrideInBytes  = sizeof(Vertex);
+    m_commandList.Close();
+    m_commandQueue.ExecuteCommandList(cmdList);
+    m_commandQueue.Flush();
 }
 
 void Renderer::BeginFrame()
@@ -141,9 +110,13 @@ void Renderer::Render()
     cmdList->SetGraphicsRootSignature(m_rootSignature.Get());
 
     // ── TEST : 삼각형 그리기 ──
-    cmdList->IASetVertexBuffers(0, 1, &m_vbView);
+    auto vbv = m_mesh->VertexBufferView();
+    auto ibv = m_mesh->IndexBufferView();
+    cmdList->IASetVertexBuffers(0, 1, &vbv);
+    cmdList->IASetIndexBuffer(&ibv);
     cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    cmdList->DrawInstanced(3, 1, 0, 0);
+    cmdList->DrawIndexedInstanced(m_mesh->GetIndexCount(), 1, 0, 0, 0);
+
     EndFrame();
 }
 
