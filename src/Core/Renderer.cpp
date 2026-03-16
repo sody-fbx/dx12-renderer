@@ -41,6 +41,8 @@ void Renderer::Initialize(HWND hwnd, int width, int height)
     for (auto& fr : m_frameRes)
         fr.Initialize(m_device.GetDevice(), 1);     // 오브젝트 1개
 
+    m_camera.Initialize(5.0f, 45.0f, (float)m_width / m_height, 0.1f, 100.0f);
+
     BuildGeometry();
 }
 
@@ -63,33 +65,30 @@ void Renderer::BuildGeometry()
     m_commandQueue.Flush();
 }
 
+void Renderer::Update(float mouseDx, float mouseDy, float wheelDelta)
+{
+    if (mouseDx != 0.0f || mouseDy != 0.0f)
+        m_camera.Rotate(mouseDx, mouseDy);
+
+    if (wheelDelta != 0.0f)
+        m_camera.Zoom(wheelDelta);
+}
+
 void Renderer::UpdateConstantBuffers()
 {
     UINT frameIndex = m_swapChain.CurrentBackBufferIndex();
     auto& curFrame = m_frameRes[frameIndex];
 
     // PassCB 갱신: View / Proj
-    // 고정 카메라 위치로 테스트.
-    XMMATRIX view = XMMatrixLookAtLH(
-        XMVectorSet(0.0f, 2.0f, -3.0f, 1.0f),   // Eye: 약간 위, 약간 뒤
-        XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f),    // Target: 원점
-        XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f)     // Up
-    );
-
-    XMMATRIX proj = XMMatrixPerspectiveFovLH(
-        XM_PIDIV4,                              // FOV 45도
-        static_cast<float>(m_width) / m_height, // Aspect Ratio
-        0.1f,                                   // Near
-        100.0f                                  // Far
-    );
-
+    XMMATRIX view = m_camera.GetViewMatrix();
+    XMMATRIX proj = m_camera.GetProjMatrix();
     XMMATRIX viewProj = view * proj;
 
     PassConstants passData;
     XMStoreFloat4x4(&passData.View, XMMatrixTranspose(view));
     XMStoreFloat4x4(&passData.Proj, XMMatrixTranspose(proj));
     XMStoreFloat4x4(&passData.ViewProj, XMMatrixTranspose(viewProj));
-    passData.EyePos = { 0.0f, 2.0f, -3.0f };
+    passData.EyePos = m_camera.GetPosition();
 
     curFrame.PassCB->CopyData(0, passData);
 
@@ -206,8 +205,10 @@ void Renderer::OnResize(int width, int height)
 
     // GPU가 모든 Back Buffer 사용을 끝낼 때까지 대기
     m_commandQueue.Flush();
-
     m_swapChain.Resize(m_device.GetDevice(), width, height);
+    m_frameFenceValues.fill(0);
+
+    m_camera.SetAspectRatio((float)width / height);
 }
 
 void Renderer::Shutdown()

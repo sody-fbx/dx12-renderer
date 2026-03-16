@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\App\InputManager.cpp" />
     <ClCompile Include="src\App\main.cpp" />
     <ClCompile Include="src\App\Timer.cpp" />
     <ClCompile Include="src\App\Window.cpp" />
@@ -31,8 +32,10 @@
     <ClCompile Include="src\Core\SwapChain.cpp" />
     <ClCompile Include="src\Resource\GeometryGenerator.cpp" />
     <ClCompile Include="src\Resource\Mesh.cpp" />
+    <ClCompile Include="src\Scene\Camera.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\App\InputManager.h" />
     <ClInclude Include="include\App\Timer.h" />
     <ClInclude Include="include\App\Window.h" />
     <ClInclude Include="include\Core\CommandList.h" />
@@ -49,6 +52,8 @@
     <ClInclude Include="include\Resource\Mesh.h" />
     <ClInclude Include="include\Resource\UploadBuffer.h" />
     <ClInclude Include="include\Resource\Vertex.h" />
+    <ClInclude Include="include\Scene\Camera.h" />
+    <ClInclude Include="include\Scene\InputManager.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="src\Shaders\Default.hlsl">

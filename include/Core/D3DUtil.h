@@ -5,11 +5,16 @@
 //  모든 DX12 관련 파일에서 include하는 공용 헤더
 // ═══════════════════════════════════════════════════════════════════
 
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
 
 #include <windows.h>
+#include <windowsx.h>
 #include <wrl/client.h>       // Microsoft::WRL::ComPtr
 
 #include <d3d12.h>

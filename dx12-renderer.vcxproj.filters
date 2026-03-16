@@ -28,6 +28,12 @@
     <Filter Include="src\Resource">
       <UniqueIdentifier>{0eb736c0-6403-4d83-b907-65c47c65ae79}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\Scene">
+      <UniqueIdentifier>{41126e71-1980-430f-aa1e-1528ae30d80b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Scene">
+      <UniqueIdentifier>{eb072dfe-f29f-4d96-920c-fe6a3d4f593d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\App\main.cpp">
@@ -65,6 +71,12 @@
     </ClCompile>
     <ClCompile Include="src\Resource\Mesh.cpp">
       <Filter>src\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene\Camera.cpp">
+      <Filter>src\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\App\InputManager.cpp">
+      <Filter>src\App</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -115,6 +127,15 @@
     </ClInclude>
     <ClInclude Include="include\Resource\Vertex.h">
       <Filter>include\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Scene\Camera.h">
+      <Filter>include\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Scene\InputManager.h">
+      <Filter>include\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="include\App\InputManager.h">
+      <Filter>include\App</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -15,14 +15,19 @@
 #include "Resource/FrameResource.h"
 #include "Resource/GeometryGenerator.h"
 
+#include "Scene/Camera.h"
+
 class Renderer
 {
 public:
     void Initialize(HWND hwnd, int width, int height);
     void Shutdown();
 
+    void Update(float mouseDx, float mouseDy, float wheelDelta);
     void Render();
     void OnResize(int width, int height);
+
+    Camera& GetCamera() { return m_camera; }
 
 private:
     void BeginFrame();
@@ -44,6 +49,9 @@ private:
 
     // FrameResource
     std::array<FrameResource, FRAME_BUFFER_COUNT>   m_frameRes;
+
+    // Scene
+    Camera m_camera;
 
     // 프레임 동기화
     std::array<UINT64, FRAME_BUFFER_COUNT> m_frameFenceValues = {};

@@ -90,6 +90,28 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
         if (wParam == VK_ESCAPE)
             PostQuitMessage(0);
         return 0;
+
+    case WM_LBUTTONDOWN:
+        if (g_window && g_window->OnMouseDown)
+            g_window->OnMouseDown(wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+        SetCapture(hwnd);
+        return 0;
+
+    case WM_LBUTTONUP:
+        if (g_window && g_window->OnMouseUp)
+            g_window->OnMouseUp(wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+        ReleaseCapture();
+        return 0;
+
+    case WM_MOUSEMOVE:
+        if (g_window && g_window->OnMouseMove)
+            g_window->OnMouseMove(wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+        return 0;
+
+    case WM_MOUSEWHEEL:
+        if (g_window && g_window->OnMouseWheel)
+            g_window->OnMouseWheel(GET_WHEEL_DELTA_WPARAM(wParam));
+        return 0;
     }
 
     return DefWindowProc(hwnd, msg, wParam, lParam);

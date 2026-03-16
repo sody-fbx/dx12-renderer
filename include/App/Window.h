@@ -19,8 +19,14 @@ public:
     int   GetWidth()  const { return m_width; }
     int   GetHeight() const { return m_height; }
 
-    // 리사이즈 콜백 — SwapChain 재생성 등에 연결
+    // 리사이즈 콜백
     std::function<void(int, int)> OnResize;
+
+    // 마우스 콜백 추가
+    std::function<void(WPARAM, int, int)> OnMouseDown;
+    std::function<void(WPARAM, int, int)> OnMouseUp;
+    std::function<void(WPARAM, int, int)> OnMouseMove;
+    std::function<void(short)>            OnMouseWheel;
 
 private:
     // Win32 메시지 콜백. static이어야 WNDCLASS에 등록 가능.
