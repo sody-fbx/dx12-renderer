@@ -18,7 +18,7 @@ namespace MathHelper
         return I;
     }
 
-    // 도(degree) → 라디안 변환
+    // 도(degree) -> 라디안 변환
     inline float DegreesToRadians(float degrees)
     {
         return degrees * (XM_PI / 180.0f);

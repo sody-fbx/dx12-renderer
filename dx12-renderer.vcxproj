@@ -51,6 +51,10 @@
     <ClInclude Include="include\Resource\Vertex.h" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="src\Shaders\Default.hlsl">
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VSMain</EntryPointName>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="src\Shaders\Triangle.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VSMain</EntryPointName>
     </FxCompile>

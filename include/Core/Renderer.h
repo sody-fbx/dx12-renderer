@@ -12,6 +12,8 @@
 #include "Core/PipelineState.h"
 
 #include "Resource/Mesh.h"
+#include "Resource/FrameResource.h"
+#include "Resource/GeometryGenerator.h"
 
 class Renderer
 {
@@ -26,7 +28,8 @@ private:
     void BeginFrame();
     void EndFrame();
 
-    void BuildTriangleGeometry();
+    void BuildGeometry();
+    void UpdateConstantBuffers();
 
     // DX12 Core Module
     D3DDevice      m_device;
@@ -36,8 +39,11 @@ private:
     RootSignature  m_rootSignature;
     PipelineState  m_pso;
 
-    // TEST : Geometry
-    std::unique_ptr<Mesh>    m_mesh;
+    // Mesh
+    std::unique_ptr<Mesh>   m_mesh;
+
+    // FrameResource
+    std::array<FrameResource, FRAME_BUFFER_COUNT>   m_frameRes;
 
     // 프레임 동기화
     std::array<UINT64, FRAME_BUFFER_COUNT> m_frameFenceValues = {};

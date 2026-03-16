@@ -3,7 +3,6 @@
 // ═══════════════════════════════════════════════════════════════════
 
 #include "Core/Renderer.h"
-#include "Resource/GeometryGenerator.h"
 
 void Renderer::Initialize(HWND hwnd, int width, int height)
 {
@@ -23,22 +22,31 @@ void Renderer::Initialize(HWND hwnd, int width, int height)
 
     m_commandList.Initialize(m_device.GetDevice());
 
-    m_rootSignature.CreateEmpty(m_device.GetDevice());
+    //m_rootSignature.CreateEmpty(m_device.GetDevice());
+    m_rootSignature.CreateWithCBV(m_device.GetDevice());
 
+    //m_pso.Create( m_device.GetDevice()
+    //            , m_rootSignature.Get()
+    //            , L"src/Shaders/Triangle.hlsl"
+    //            , L"src/Shaders/Triangle.hlsl"
+    //            , m_swapChain.GetBackBufferFormat()
+    //            , m_swapChain.GetDepthFormat() );
     m_pso.Create( m_device.GetDevice()
                 , m_rootSignature.Get()
-                , L"src/Shaders/Triangle.hlsl"
-                , L"src/Shaders/Triangle.hlsl"
+                , L"src/Shaders/Default.hlsl"
+                , L"src/Shaders/Default.hlsl"
                 , m_swapChain.GetBackBufferFormat()
                 , m_swapChain.GetDepthFormat() );
 
-    BuildTriangleGeometry();
+    for (auto& fr : m_frameRes)
+        fr.Initialize(m_device.GetDevice(), 1);     // 오브젝트 1개
+
+    BuildGeometry();
 }
 
-void Renderer::BuildTriangleGeometry()
+void Renderer::BuildGeometry()
 {
-    // ── TEST : 삼각형 그리기 ──
-    auto triangleData = GeometryGenerator::CreateTriangle();
+    auto meshData = GeometryGenerator::CreateBox(1.0f, 1.0f, 1.0f);
 
     m_commandList.Reset(0, nullptr);
     auto cmdList = m_commandList.Get();
@@ -46,13 +54,50 @@ void Renderer::BuildTriangleGeometry()
     m_mesh = std::make_unique<Mesh>();
     m_mesh->Create( m_device.GetDevice()
                  , cmdList
-                 , triangleData.Vertices.data(), (UINT)triangleData.Vertices.size(), sizeof(VertexCol)
-                 , triangleData.Indices.data(), (UINT)triangleData.Indices.size(), DXGI_FORMAT_R32_UINT
+                 , meshData.Vertices.data(), (UINT)meshData.Vertices.size(), sizeof(VertexTex)
+                 , meshData.Indices.data(), (UINT)meshData.Indices.size(), DXGI_FORMAT_R32_UINT
                  );
 
     m_commandList.Close();
     m_commandQueue.ExecuteCommandList(cmdList);
     m_commandQueue.Flush();
+}
+
+void Renderer::UpdateConstantBuffers()
+{
+    UINT frameIndex = m_swapChain.CurrentBackBufferIndex();
+    auto& curFrame = m_frameRes[frameIndex];
+
+    // PassCB 갱신: View / Proj
+    // 고정 카메라 위치로 테스트.
+    XMMATRIX view = XMMatrixLookAtLH(
+        XMVectorSet(0.0f, 2.0f, -3.0f, 1.0f),   // Eye: 약간 위, 약간 뒤
+        XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f),    // Target: 원점
+        XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f)     // Up
+    );
+
+    XMMATRIX proj = XMMatrixPerspectiveFovLH(
+        XM_PIDIV4,                              // FOV 45도
+        static_cast<float>(m_width) / m_height, // Aspect Ratio
+        0.1f,                                   // Near
+        100.0f                                  // Far
+    );
+
+    XMMATRIX viewProj = view * proj;
+
+    PassConstants passData;
+    XMStoreFloat4x4(&passData.View, XMMatrixTranspose(view));
+    XMStoreFloat4x4(&passData.Proj, XMMatrixTranspose(proj));
+    XMStoreFloat4x4(&passData.ViewProj, XMMatrixTranspose(viewProj));
+    passData.EyePos = { 0.0f, 2.0f, -3.0f };
+
+    curFrame.PassCB->CopyData(0, passData);
+
+    // ObjectCB 갱신: World
+    ObjectConstants objData;
+    XMStoreFloat4x4(&objData.World, XMMatrixTranspose(XMMatrixIdentity()));
+
+    curFrame.ObjectCB->CopyData(0, objData);
 }
 
 void Renderer::BeginFrame()
@@ -80,7 +125,12 @@ void Renderer::Render()
 {
     BeginFrame();
 
+    // CB Update
+    UpdateConstantBuffers();
+
     auto* cmdList = m_commandList.Get();
+    UINT frameIndex = m_swapChain.CurrentBackBufferIndex();
+    auto& curFrame = m_frameRes[frameIndex];
 
     // Viewport & Scissor
     D3D12_VIEWPORT viewport = {};
@@ -105,11 +155,14 @@ void Renderer::Render()
     // 렌더타겟 바인딩
     cmdList->OMSetRenderTargets(1, &rtv, FALSE, &dsv);
 
-    // PSO, Root Signature 바인딩
-    cmdList->SetPipelineState(m_pso.Get());
+    // Root Signature 바인딩
     cmdList->SetGraphicsRootSignature(m_rootSignature.Get());
 
-    // ── TEST : 삼각형 그리기 ──
+    // CB 바인딩
+    cmdList->SetGraphicsRootConstantBufferView(0, curFrame.ObjectCB->GetElementGPUAddress(0));
+    cmdList->SetGraphicsRootConstantBufferView(1, curFrame.PassCB->GetElementGPUAddress(0));
+
+    // Mesh Draw
     auto vbv = m_mesh->VertexBufferView();
     auto ibv = m_mesh->IndexBufferView();
     cmdList->IASetVertexBuffers(0, 1, &vbv);
