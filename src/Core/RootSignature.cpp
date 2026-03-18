@@ -19,12 +19,10 @@ void RootSignature::CreateEmpty(ID3D12Device* device)
     ComPtr<ID3DBlob> errorBlob;
 
     // 바이트코드로 변환
-    HRESULT hr = D3D12SerializeRootSignature(
-        &desc,
-        D3D_ROOT_SIGNATURE_VERSION_1,
-        &serializedRootSig,
-        &errorBlob
-    );
+    HRESULT hr = D3D12SerializeRootSignature(&desc
+                                            , D3D_ROOT_SIGNATURE_VERSION_1
+                                            , &serializedRootSig
+                                            , &errorBlob );
 
     if (errorBlob)
     {
@@ -33,14 +31,10 @@ void RootSignature::CreateEmpty(ID3D12Device* device)
     ThrowIfFailed(hr);
 
     // Device에서 생성
-    ThrowIfFailed(
-        device->CreateRootSignature(
-            0,
-            serializedRootSig->GetBufferPointer(),
-            serializedRootSig->GetBufferSize(),
-            IID_PPV_ARGS(&m_rootSignature)
-        )
-    );
+    ThrowIfFailed(device->CreateRootSignature( 0
+                                             , serializedRootSig->GetBufferPointer()
+                                             , serializedRootSig->GetBufferSize()
+                                             , IID_PPV_ARGS(&m_rootSignature)) );
 }
 
 void RootSignature::CreateWithCBV(ID3D12Device* device)
@@ -67,12 +61,15 @@ void RootSignature::CreateWithCBV(ID3D12Device* device)
     desc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
     ComPtr<ID3DBlob> serialized, error;
-    HRESULT hr = D3D12SerializeRootSignature(&desc, D3D_ROOT_SIGNATURE_VERSION_1, &serialized, &error);
+    HRESULT hr = D3D12SerializeRootSignature( &desc
+                                            , D3D_ROOT_SIGNATURE_VERSION_1
+                                            , &serialized
+                                            , &error );
     if (error) OutputDebugStringA(static_cast<const char*>(error->GetBufferPointer()));
     ThrowIfFailed(hr);
 
-    ThrowIfFailed(device->CreateRootSignature(
-        0, serialized->GetBufferPointer(), serialized->GetBufferSize(),
-        IID_PPV_ARGS(&m_rootSignature)
-    ));
+    ThrowIfFailed(device->CreateRootSignature( 0
+                                             , serialized->GetBufferPointer()
+                                             , serialized->GetBufferSize()
+                                             , IID_PPV_ARGS(&m_rootSignature)));
 }

@@ -31,9 +31,7 @@
 #include <cassert>
 #include <unordered_map>
 
-// ─── ComPtr 별칭 ───
-// DX12의 COM 오브젝트는 수동 Release 대신 ComPtr로 관리.
-// ComPtr은 스마트 포인터처럼 동작 — 스코프 벗어나면 자동 Release.
+// ─── ComPtr ───
 using Microsoft::WRL::ComPtr;
 
 // ─── HRESULT 체크 매크로 ───
@@ -54,3 +52,7 @@ using Microsoft::WRL::ComPtr;
 // ─── 프레임 리소스 상수 ───
 // 트리플 버퍼링 : GPU가 프레임 N을 렌더링하는 동안 CPU는 프레임 N+1, N+2를 준비할 수 있음.
 static constexpr UINT FRAME_BUFFER_COUNT = 3;
+
+// ─── 포맷 ───
+static constexpr DXGI_FORMAT BACK_BUFFER_FORMAT = DXGI_FORMAT_R8G8B8A8_UNORM;
+static constexpr DXGI_FORMAT DEPTH_FORMAT = DXGI_FORMAT_D24_UNORM_S8_UINT;

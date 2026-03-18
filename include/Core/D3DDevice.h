@@ -11,6 +11,7 @@ class D3DDevice
 public:
     void Initialize();
 
+public: // Getter
     ID3D12Device*   GetDevice()  const { return m_device.Get(); }
     IDXGIFactory4*  GetFactory() const { return m_factory.Get(); }
 

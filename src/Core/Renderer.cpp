@@ -10,33 +10,14 @@ void Renderer::Initialize(HWND hwnd, int width, int height)
     m_height = height;
 
     // 초기화 순서
-    // Device -> CommandQueue -> SwapChain -> CommandList -> RootSig -> PSO
+    // Device -> CommandQueue -> SwapChain -> CommandList
     m_device.Initialize();
-
     m_commandQueue.Initialize(m_device.GetDevice());
-
     m_swapChain.Initialize( m_device.GetFactory()
                           , m_commandQueue.GetQueue()
                           , m_device.GetDevice()
                           , hwnd, width, height );
-
     m_commandList.Initialize(m_device.GetDevice());
-
-    //m_rootSignature.CreateEmpty(m_device.GetDevice());
-    m_rootSignature.CreateWithCBV(m_device.GetDevice());
-
-    //m_pso.Create( m_device.GetDevice()
-    //            , m_rootSignature.Get()
-    //            , L"src/Shaders/Triangle.hlsl"
-    //            , L"src/Shaders/Triangle.hlsl"
-    //            , m_swapChain.GetBackBufferFormat()
-    //            , m_swapChain.GetDepthFormat() );
-    m_pso.Create( m_device.GetDevice()
-                , m_rootSignature.Get()
-                , L"src/Shaders/Default.hlsl"
-                , L"src/Shaders/Default.hlsl"
-                , m_swapChain.GetBackBufferFormat()
-                , m_swapChain.GetDepthFormat() );
 
     m_camera.Initialize(5.0f, 45.0f, (float)m_width / m_height, 0.1f, 100.0f);
 
@@ -45,6 +26,8 @@ void Renderer::Initialize(HWND hwnd, int width, int height)
 
     for (auto& fr : m_frameRes)
         fr.Initialize(m_device.GetDevice(), (UINT)m_renderItems.size());
+
+    BuildPasses();
 }
 
 void Renderer::BuildGeometry()
@@ -153,6 +136,16 @@ void Renderer::BuildRenderItem()
     }
 }
 
+void Renderer::BuildPasses()
+{
+    // ForwardPass
+    m_forwardPass = std::make_unique<ForwardPass>();
+    m_forwardPass->Setup(m_device.GetDevice(), m_width, m_height);
+
+    m_passes.clear();
+    m_passes.push_back(m_forwardPass.get());
+}
+
 void Renderer::Update(float mouseDx, float mouseDy, float wheelDelta)
 {
     if (mouseDx != 0.0f || mouseDy != 0.0f)
@@ -179,11 +172,6 @@ void Renderer::UpdateConstantBuffers()
     passData.EyePos = m_camera.GetPosition();
 
     curFrame.PassCB->CopyData(0, passData);
-
-    //// ObjectCB 갱신: World
-    //ObjectConstants objData;
-    //XMStoreFloat4x4(&objData.World, XMMatrixTranspose(XMMatrixIdentity()));
-    //curFrame.ObjectCB->CopyData(0, objData);
     
     // ObjectCB (RenderItem별 갱신)
     for (auto& item : m_renderItems)
@@ -211,7 +199,7 @@ void Renderer::BeginFrame()
     m_commandQueue.WaitForFenceValue(m_frameFenceValues[frameIndex]);
 
     // CommandList 리셋
-    m_commandList.Reset(frameIndex, m_pso.Get());
+    m_commandList.Reset(frameIndex, nullptr);
     auto* cmdList = m_commandList.Get();
 
     // Barrier: PRESENT -> RENDER_TARGET
@@ -231,62 +219,22 @@ void Renderer::Render()
     // CB Update
     UpdateConstantBuffers();
 
-    auto* cmdList = m_commandList.Get();
+    // FrameContext 구성
     UINT frameIndex = m_swapChain.CurrentBackBufferIndex();
-    auto& curFrame = m_frameRes[frameIndex];
+    FrameContext ctx = {};
+    ctx.CmdList = m_commandList.Get();
+    ctx.BackBuffer = m_swapChain.CurrentBackBuffer();
+    ctx.RTV = m_swapChain.CurrentRTV();
+    ctx.FrameIndex = frameIndex;
+    ctx.ScreenWidth = m_width;
+    ctx.ScreenHeight = m_height;
+    ctx.CurrentFrameResource = &m_frameRes[frameIndex];
+    ctx.RenderItems = &m_renderItems;
 
-    // Viewport & Scissor
-    D3D12_VIEWPORT viewport = {};
-    viewport.TopLeftX = 0.0f;
-    viewport.TopLeftY = 0.0f;
-    viewport.Width    = static_cast<float>(m_width);
-    viewport.Height   = static_cast<float>(m_height);
-    viewport.MinDepth = 0.0f;
-    viewport.MaxDepth = 1.0f;
-    cmdList->RSSetViewports(1, &viewport);
-
-    D3D12_RECT scissor = { 0, 0, m_width, m_height };
-    cmdList->RSSetScissorRects(1, &scissor);
-
-    // Clear RTV & DSV
-    const float clearColor[] = { 0.05f, 0.05f, 0.15f, 1.0f };
-    auto rtv = m_swapChain.CurrentRTV();
-    auto dsv = m_swapChain.DSV();
-    cmdList->ClearRenderTargetView(rtv, clearColor, 0, nullptr);
-    cmdList->ClearDepthStencilView(dsv, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
-
-    // 렌더타겟 바인딩
-    cmdList->OMSetRenderTargets(1, &rtv, FALSE, &dsv);
-
-    // Root Signature 바인딩
-    cmdList->SetGraphicsRootSignature(m_rootSignature.Get());
-
-    // CB 바인딩
-    cmdList->SetGraphicsRootConstantBufferView(1, curFrame.PassCB->GetElementGPUAddress(0));
-
-    // Mesh Draw
-    //auto vbv = m_mesh->VertexBufferView();
-    //auto ibv = m_mesh->IndexBufferView();
-    //cmdList->IASetVertexBuffers(0, 1, &vbv);
-    //cmdList->IASetIndexBuffer(&ibv);
-    //cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    //cmdList->DrawIndexedInstanced(m_mesh->GetIndexCount(), 1, 0, 0, 0);
-
-    for (auto& item : m_renderItems)
+    // Pass 실행
+    for (auto* pass : m_passes)
     {
-        // 이 오브젝트의 Mesh 바인딩
-        auto vbv = item->MeshRef->VertexBufferView();
-        auto ibv = item->MeshRef->IndexBufferView();
-        cmdList->IASetVertexBuffers(0, 1, &vbv);
-        cmdList->IASetIndexBuffer(&ibv);
-        cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-        // 이 오브젝트의 ObjectCB 바인딩
-        // RenderItem마다 다른 ObjCBIndex → 다른 World 행렬!
-        cmdList->SetGraphicsRootConstantBufferView(0, curFrame.ObjectCB->GetElementGPUAddress(item->ObjCBIndex));
-
-        // Draw
-        cmdList->DrawIndexedInstanced(item->MeshRef->GetIndexCount(), 1, 0, 0, 0);
+        pass->Execute(ctx);
     }
 
     EndFrame();
@@ -329,6 +277,9 @@ void Renderer::OnResize(int width, int height)
     m_frameFenceValues.fill(0);
 
     m_camera.SetAspectRatio((float)width / height);
+
+    for (auto* pass : m_passes)
+        pass->OnResize(m_device.GetDevice(), width, height);
 }
 
 void Renderer::Shutdown()

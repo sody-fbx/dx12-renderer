@@ -30,6 +30,7 @@
     <ClCompile Include="src\Core\Renderer.cpp" />
     <ClCompile Include="src\Core\RootSignature.cpp" />
     <ClCompile Include="src\Core\SwapChain.cpp" />
+    <ClCompile Include="src\Pass\ForwardPass.cpp" />
     <ClCompile Include="src\Resource\GeometryGenerator.cpp" />
     <ClCompile Include="src\Resource\Mesh.cpp" />
     <ClCompile Include="src\Scene\Camera.cpp" />
@@ -47,14 +48,16 @@
     <ClInclude Include="include\Core\Renderer.h" />
     <ClInclude Include="include\Core\RootSignature.h" />
     <ClInclude Include="include\Core\SwapChain.h" />
+    <ClInclude Include="include\Pass\ForwardPass.h" />
+    <ClInclude Include="include\Pass\IRenderPass.h" />
     <ClInclude Include="include\Resource\FrameResource.h" />
     <ClInclude Include="include\Resource\GeometryGenerator.h" />
     <ClInclude Include="include\Resource\Mesh.h" />
     <ClInclude Include="include\Resource\UploadBuffer.h" />
     <ClInclude Include="include\Resource\Vertex.h" />
     <ClInclude Include="include\Scene\Camera.h" />
-    <ClInclude Include="include\Scene\InputManager.h" />
     <ClInclude Include="include\Scene\RenderItem.h" />
+    <ClInclude Include="include\Shaders\ShaderList.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="src\Shaders\Default.hlsl">

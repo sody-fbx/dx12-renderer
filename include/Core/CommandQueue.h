@@ -24,6 +24,7 @@ public:
     // GPU의 모든 작업이 끝날 때까지 대기 (Flush)
     void Flush();
 
+public: // Getter
     ID3D12CommandQueue* GetQueue() const { return m_queue.Get(); }
 
 private:

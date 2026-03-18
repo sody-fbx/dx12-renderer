@@ -8,8 +8,9 @@
 #include "Core/SwapChain.h"
 #include "Core/CommandQueue.h"
 #include "Core/CommandList.h"
-#include "Core/RootSignature.h"
-#include "Core/PipelineState.h"
+
+#include "Pass/IRenderPass.h"
+#include "Pass/ForwardPass.h"
 
 #include "Resource/Mesh.h"
 #include "Resource/FrameResource.h"
@@ -36,15 +37,19 @@ private:
 
     void BuildGeometry();
     void BuildRenderItem();
+    void BuildPasses();
     void UpdateConstantBuffers();
 
+private:
     // DX12 Core Module
     D3DDevice      m_device;
     SwapChain      m_swapChain;
     CommandQueue   m_commandQueue;
     CommandList    m_commandList;
-    RootSignature  m_rootSignature;
-    PipelineState  m_pso;
+
+    // Pass
+    std::vector<IRenderPass*>    m_passes;
+    std::unique_ptr<ForwardPass> m_forwardPass;
 
     // Mesh
     std::unordered_map<std::string, std::unique_ptr<Mesh>>   m_meshes;

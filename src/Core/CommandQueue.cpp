@@ -53,8 +53,7 @@ UINT64 CommandQueue::Signal()
 
 void CommandQueue::WaitForFenceValue(UINT64 fenceValue)
 {
-    // Fence 대기
-    // 이미 완료된 경우 즉시 통과.
+    // GPU 완료 작업 수 < CPU Fence 값 (새로 그릴 Back Buffer가 다 차있음)
     if (m_fence->GetCompletedValue() < fenceValue)
     {
         ThrowIfFailed(m_fence->SetEventOnCompletion(fenceValue, m_fenceEvent));
