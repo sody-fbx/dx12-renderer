@@ -54,6 +54,7 @@
     <ClInclude Include="include\Resource\Vertex.h" />
     <ClInclude Include="include\Scene\Camera.h" />
     <ClInclude Include="include\Scene\InputManager.h" />
+    <ClInclude Include="include\Scene\RenderItem.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="src\Shaders\Default.hlsl">

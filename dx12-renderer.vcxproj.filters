@@ -137,6 +137,9 @@
     <ClInclude Include="include\App\InputManager.h">
       <Filter>include\App</Filter>
     </ClInclude>
+    <ClInclude Include="include\Scene\RenderItem.h">
+      <Filter>include\Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="src\Shaders\Triangle.hlsl">

@@ -38,31 +38,119 @@ void Renderer::Initialize(HWND hwnd, int width, int height)
                 , m_swapChain.GetBackBufferFormat()
                 , m_swapChain.GetDepthFormat() );
 
-    for (auto& fr : m_frameRes)
-        fr.Initialize(m_device.GetDevice(), 1);     // 오브젝트 1개
-
     m_camera.Initialize(5.0f, 45.0f, (float)m_width / m_height, 0.1f, 100.0f);
 
     BuildGeometry();
+    BuildRenderItem();
+
+    for (auto& fr : m_frameRes)
+        fr.Initialize(m_device.GetDevice(), (UINT)m_renderItems.size());
 }
 
 void Renderer::BuildGeometry()
 {
-    auto meshData = GeometryGenerator::CreateBox(1.0f, 1.0f, 1.0f);
-
     m_commandList.Reset(0, nullptr);
     auto cmdList = m_commandList.Get();
 
-    m_mesh = std::make_unique<Mesh>();
-    m_mesh->Create( m_device.GetDevice()
-                 , cmdList
-                 , meshData.Vertices.data(), (UINT)meshData.Vertices.size(), sizeof(VertexTex)
-                 , meshData.Indices.data(), (UINT)meshData.Indices.size(), DXGI_FORMAT_R32_UINT
-                 );
+    // Box
+    {
+        auto data = GeometryGenerator::CreateBox(1.0f, 1.0f, 1.0f);
+        auto mesh = std::make_unique<Mesh>();
+        mesh->Create(
+            m_device.GetDevice(), cmdList,
+            data.Vertices.data(), (UINT)data.Vertices.size(), sizeof(VertexTex),
+            data.Indices.data(), (UINT)data.Indices.size(), DXGI_FORMAT_R32_UINT
+        );
+        mesh->Name = "Box";
+        m_meshes["Box"] = std::move(mesh);
+    }
+
+    // Sphere
+    {
+        auto data = GeometryGenerator::CreateSphere(0.5f, 20, 20);
+        auto mesh = std::make_unique<Mesh>();
+        mesh->Create(
+            m_device.GetDevice(), cmdList,
+            data.Vertices.data(), (UINT)data.Vertices.size(), sizeof(VertexTex),
+            data.Indices.data(), (UINT)data.Indices.size(), DXGI_FORMAT_R32_UINT
+        );
+        mesh->Name = "Sphere";
+        m_meshes["Sphere"] = std::move(mesh);
+    }
+
+    // Cylinder
+    {
+        auto data = GeometryGenerator::CreateCylinder(0.4f, 0.4f, 1.5f, 20, 5);
+        auto mesh = std::make_unique<Mesh>();
+        mesh->Create(
+            m_device.GetDevice(), cmdList,
+            data.Vertices.data(), (UINT)data.Vertices.size(), sizeof(VertexTex),
+            data.Indices.data(), (UINT)data.Indices.size(), DXGI_FORMAT_R32_UINT
+        );
+        mesh->Name = "Cylinder";
+        m_meshes["Cylinder"] = std::move(mesh);
+    }
+
+    // Grid
+    {
+        auto data = GeometryGenerator::CreateGrid(10.0f, 10.0f, 20, 20);
+        auto mesh = std::make_unique<Mesh>();
+        mesh->Create(
+            m_device.GetDevice(), cmdList,
+            data.Vertices.data(), (UINT)data.Vertices.size(), sizeof(VertexTex),
+            data.Indices.data(), (UINT)data.Indices.size(), DXGI_FORMAT_R32_UINT
+        );
+        mesh->Name = "Grid";
+        m_meshes["Grid"] = std::move(mesh);
+    }
 
     m_commandList.Close();
     m_commandQueue.ExecuteCommandList(cmdList);
     m_commandQueue.Flush();
+}
+
+void Renderer::BuildRenderItem()
+{
+    UINT cbIndex = 0;
+
+    // Grid (바닥, y=0)
+    {
+        auto item = std::make_unique<RenderItem>();
+        item->MeshRef = m_meshes["Grid"].get();
+        item->ObjCBIndex = cbIndex++;
+        // World = Identity (원점에 수평으로 깔림)
+        m_renderItems.push_back(std::move(item));
+    }
+
+    // Box (원점 위, y=0.5)
+    {
+        auto item = std::make_unique<RenderItem>();
+        item->MeshRef = m_meshes["Box"].get();
+        item->ObjCBIndex = cbIndex++;
+        XMStoreFloat4x4(&item->World,
+            XMMatrixTranslation(0.0f, 0.5f, 0.0f));
+        m_renderItems.push_back(std::move(item));
+    }
+
+    // Sphere (오른쪽, x=3)
+    {
+        auto item = std::make_unique<RenderItem>();
+        item->MeshRef = m_meshes["Sphere"].get();
+        item->ObjCBIndex = cbIndex++;
+        XMStoreFloat4x4(&item->World,
+            XMMatrixTranslation(3.0f, 0.5f, 0.0f));
+        m_renderItems.push_back(std::move(item));
+    }
+
+    // Cylinder (왼쪽, x=-3)
+    {
+        auto item = std::make_unique<RenderItem>();
+        item->MeshRef = m_meshes["Cylinder"].get();
+        item->ObjCBIndex = cbIndex++;
+        XMStoreFloat4x4(&item->World,
+            XMMatrixTranslation(-3.0f, 0.75f, 0.0f));
+        m_renderItems.push_back(std::move(item));
+    }
 }
 
 void Renderer::Update(float mouseDx, float mouseDy, float wheelDelta)
@@ -92,11 +180,27 @@ void Renderer::UpdateConstantBuffers()
 
     curFrame.PassCB->CopyData(0, passData);
 
-    // ObjectCB 갱신: World
-    ObjectConstants objData;
-    XMStoreFloat4x4(&objData.World, XMMatrixTranspose(XMMatrixIdentity()));
+    //// ObjectCB 갱신: World
+    //ObjectConstants objData;
+    //XMStoreFloat4x4(&objData.World, XMMatrixTranspose(XMMatrixIdentity()));
+    //curFrame.ObjectCB->CopyData(0, objData);
+    
+    // ObjectCB (RenderItem별 갱신)
+    for (auto& item : m_renderItems)
+    {
+        // NumFramesDirty > 0이면 이 오브젝트의 CB를 갱신해야 함.
+        // World 행렬이 바뀔 때 NumFramesDirty = FRAME_BUFFER_COUNT로 세팅.
+        // 트리플 버퍼링이라 3개 FrameResource 모두 반영되어야 하므로
+        // 3프레임 동안 갱신 후 0이 되면 스킵.
+        if (item->NumFramesDirty > 0)
+        {
+            ObjectConstants objData;
+            XMStoreFloat4x4(&objData.World, XMMatrixTranspose(XMLoadFloat4x4(&item->World)));
 
-    curFrame.ObjectCB->CopyData(0, objData);
+            curFrame.ObjectCB->CopyData(item->ObjCBIndex, objData);
+            item->NumFramesDirty--;
+        }
+    }
 }
 
 void Renderer::BeginFrame()
@@ -158,16 +262,32 @@ void Renderer::Render()
     cmdList->SetGraphicsRootSignature(m_rootSignature.Get());
 
     // CB 바인딩
-    cmdList->SetGraphicsRootConstantBufferView(0, curFrame.ObjectCB->GetElementGPUAddress(0));
     cmdList->SetGraphicsRootConstantBufferView(1, curFrame.PassCB->GetElementGPUAddress(0));
 
     // Mesh Draw
-    auto vbv = m_mesh->VertexBufferView();
-    auto ibv = m_mesh->IndexBufferView();
-    cmdList->IASetVertexBuffers(0, 1, &vbv);
-    cmdList->IASetIndexBuffer(&ibv);
-    cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    cmdList->DrawIndexedInstanced(m_mesh->GetIndexCount(), 1, 0, 0, 0);
+    //auto vbv = m_mesh->VertexBufferView();
+    //auto ibv = m_mesh->IndexBufferView();
+    //cmdList->IASetVertexBuffers(0, 1, &vbv);
+    //cmdList->IASetIndexBuffer(&ibv);
+    //cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    //cmdList->DrawIndexedInstanced(m_mesh->GetIndexCount(), 1, 0, 0, 0);
+
+    for (auto& item : m_renderItems)
+    {
+        // 이 오브젝트의 Mesh 바인딩
+        auto vbv = item->MeshRef->VertexBufferView();
+        auto ibv = item->MeshRef->IndexBufferView();
+        cmdList->IASetVertexBuffers(0, 1, &vbv);
+        cmdList->IASetIndexBuffer(&ibv);
+        cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+        // 이 오브젝트의 ObjectCB 바인딩
+        // RenderItem마다 다른 ObjCBIndex → 다른 World 행렬!
+        cmdList->SetGraphicsRootConstantBufferView(0, curFrame.ObjectCB->GetElementGPUAddress(item->ObjCBIndex));
+
+        // Draw
+        cmdList->DrawIndexedInstanced(item->MeshRef->GetIndexCount(), 1, 0, 0, 0);
+    }
 
     EndFrame();
 }

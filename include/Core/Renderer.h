@@ -16,6 +16,7 @@
 #include "Resource/GeometryGenerator.h"
 
 #include "Scene/Camera.h"
+#include "Scene/RenderItem.h"
 
 class Renderer
 {
@@ -34,6 +35,7 @@ private:
     void EndFrame();
 
     void BuildGeometry();
+    void BuildRenderItem();
     void UpdateConstantBuffers();
 
     // DX12 Core Module
@@ -45,7 +47,10 @@ private:
     PipelineState  m_pso;
 
     // Mesh
-    std::unique_ptr<Mesh>   m_mesh;
+    std::unordered_map<std::string, std::unique_ptr<Mesh>>   m_meshes;
+
+    // Scene Object
+    std::vector<std::unique_ptr<RenderItem>> m_renderItems;
 
     // FrameResource
     std::array<FrameResource, FRAME_BUFFER_COUNT>   m_frameRes;
