@@ -10,10 +10,8 @@ template<typename T>
 class UploadBuffer
 {
 public:
-    UploadBuffer( ID3D12Device* device
-                , UINT elementCount
-                , bool isConstantBuffer )
-                : m_isConstantBuffer(isConstantBuffer)
+    UploadBuffer(ID3D12Device* device, UINT elementCount, bool isConstantBuffer)
+        : m_isConstantBuffer(isConstantBuffer)
     {
         m_elementByteSize = sizeof(T);
 

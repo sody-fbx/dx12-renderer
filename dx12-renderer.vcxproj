@@ -34,7 +34,6 @@
     <ClCompile Include="src\Resource\GeometryGenerator.cpp" />
     <ClCompile Include="src\Resource\Mesh.cpp" />
     <ClCompile Include="src\Scene\Camera.cpp" />
-    <ClCompile Include="src\Scene\Scene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\App\InputManager.h" />
@@ -58,7 +57,6 @@
     <ClInclude Include="include\Resource\Vertex.h" />
     <ClInclude Include="include\Scene\Camera.h" />
     <ClInclude Include="include\Scene\RenderItem.h" />
-    <ClInclude Include="include\Scene\Scene.h" />
     <ClInclude Include="include\Shaders\ShaderList.h" />
   </ItemGroup>
   <ItemGroup>

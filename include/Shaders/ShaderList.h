@@ -35,13 +35,13 @@ constexpr const char* ShaderNames[] =
 #undef X
 };
 
-// enum -> 경로 변환 헬퍼 함수
+// enum → 경로 변환 헬퍼 함수
 inline constexpr const wchar_t* GetShaderPath(SHADERTYPE type)
 {
     return ShaderPaths[static_cast<int>(type)];
 }
 
-// enum -> 이름 변환 헬퍼 함수
+// enum → 이름 변환 헬퍼 함수
 inline constexpr const char* GetShaderName(SHADERTYPE type)
 {
     return ShaderNames[static_cast<int>(type)];

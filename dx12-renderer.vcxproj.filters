@@ -90,9 +90,6 @@
     <ClCompile Include="src\Pass\ForwardPass.cpp">
       <Filter>src\Pass</Filter>
     </ClCompile>
-    <ClCompile Include="src\Scene\Scene.cpp">
-      <Filter>src\Scene</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Core\D3DUtil.h">
@@ -160,9 +157,6 @@
     </ClInclude>
     <ClInclude Include="include\Pass\IRenderPass.h">
       <Filter>include\Pass</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Scene\Scene.h">
-      <Filter>include\Scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
