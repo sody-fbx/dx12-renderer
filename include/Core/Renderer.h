@@ -14,10 +14,8 @@
 
 #include "Resource/Mesh.h"
 #include "Resource/FrameResource.h"
-#include "Resource/GeometryGenerator.h"
 
-#include "Scene/Camera.h"
-#include "Scene/RenderItem.h"
+#include "Scene/Scene.h"
 
 class Renderer
 {
@@ -29,14 +27,10 @@ public:
     void Render();
     void OnResize(int width, int height);
 
-    Camera& GetCamera() { return m_camera; }
-
 private:
     void BeginFrame();
     void EndFrame();
 
-    void BuildGeometry();
-    void BuildRenderItem();
     void BuildPasses();
     void UpdateConstantBuffers();
 
@@ -51,17 +45,14 @@ private:
     std::vector<IRenderPass*>    m_passes;
     std::unique_ptr<ForwardPass> m_forwardPass;
 
+    // Scene
+    Scene m_scene;
+
     // Mesh
     std::unordered_map<std::string, std::unique_ptr<Mesh>>   m_meshes;
 
-    // Scene Object
-    std::vector<std::unique_ptr<RenderItem>> m_renderItems;
-
     // FrameResource
     std::array<FrameResource, FRAME_BUFFER_COUNT>   m_frameRes;
-
-    // Scene
-    Camera m_camera;
 
     // 프레임 동기화
     std::array<UINT64, FRAME_BUFFER_COUNT> m_frameFenceValues = {};

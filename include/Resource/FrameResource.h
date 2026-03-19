@@ -7,7 +7,6 @@
 #include "Core/MathHelper.h"
 #include "Resource/UploadBuffer.h"
 
-// 오브젝트별 데이터 (World = Model)
 struct ObjectConstants
 {
     XMFLOAT4X4 World = {};
@@ -18,7 +17,6 @@ struct ObjectConstants
     }
 };
 
-// 프레임(패스)별 데이터 (VP + Camera/Light 정보)
 struct PassConstants
 {
     XMFLOAT4X4 View       = {};
