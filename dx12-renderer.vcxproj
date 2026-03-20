@@ -26,11 +26,12 @@
     <ClCompile Include="src\Core\CommandList.cpp" />
     <ClCompile Include="src\Core\CommandQueue.cpp" />
     <ClCompile Include="src\Core\D3DDevice.cpp" />
+    <ClCompile Include="src\Core\DescriptorHeap.cpp" />
     <ClCompile Include="src\Core\PipelineState.cpp" />
-    <ClCompile Include="src\Core\Renderer.cpp" />
     <ClCompile Include="src\Core\RootSignature.cpp" />
     <ClCompile Include="src\Core\SwapChain.cpp" />
     <ClCompile Include="src\Pass\ForwardPass.cpp" />
+    <ClCompile Include="src\Renderer.cpp" />
     <ClCompile Include="src\Resource\GeometryGenerator.cpp" />
     <ClCompile Include="src\Resource\Mesh.cpp" />
     <ClCompile Include="src\Scene\Camera.cpp" />
@@ -44,13 +45,15 @@
     <ClInclude Include="include\Core\CommandQueue.h" />
     <ClInclude Include="include\Core\D3DDevice.h" />
     <ClInclude Include="include\Core\D3DUtil.h" />
+    <ClInclude Include="include\Core\DescriptorHeap.h" />
     <ClInclude Include="include\Core\MathHelper.h" />
     <ClInclude Include="include\Core\PipelineState.h" />
-    <ClInclude Include="include\Core\Renderer.h" />
     <ClInclude Include="include\Core\RootSignature.h" />
     <ClInclude Include="include\Core\SwapChain.h" />
     <ClInclude Include="include\Pass\ForwardPass.h" />
     <ClInclude Include="include\Pass\IRenderPass.h" />
+    <ClInclude Include="include\Pass\PassUtil.h" />
+    <ClInclude Include="include\Renderer.h" />
     <ClInclude Include="include\Resource\FrameResource.h" />
     <ClInclude Include="include\Resource\GeometryGenerator.h" />
     <ClInclude Include="include\Resource\Mesh.h" />
@@ -60,6 +63,7 @@
     <ClInclude Include="include\Scene\RenderItem.h" />
     <ClInclude Include="include\Scene\Scene.h" />
     <ClInclude Include="include\Shaders\ShaderList.h" />
+    <ClInclude Include="include\Shaders\ShaderUtil.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="src\Shaders\Default.hlsl">

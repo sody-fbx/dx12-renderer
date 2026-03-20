@@ -4,38 +4,6 @@
 
 #include "Core/PipelineState.h"
 
-ComPtr<ID3DBlob> PipelineState::CompileShader ( const std::wstring& path
-                                              , const std::string& entryPoint
-                                              , const std::string& target )
-{
-    // 셰이더 컴파일
-    UINT compileFlags = 0;
-#if defined(_DEBUG)
-    compileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
-#endif
-
-    ComPtr<ID3DBlob> bytecode;
-    ComPtr<ID3DBlob> errors;
-
-    HRESULT hr = D3DCompileFromFile ( path.c_str()
-                                    , nullptr       // Defines
-                                    , D3D_COMPILE_STANDARD_FILE_INCLUDE
-                                    , entryPoint.c_str()
-                                    , target.c_str()
-                                    , compileFlags
-                                    , 0
-                                    , &bytecode
-                                    , &errors );
-
-    if (errors)
-    {
-        OutputDebugStringA(static_cast<const char*>(errors->GetBufferPointer()));
-    }
-    ThrowIfFailed(hr);
-
-    return bytecode;
-}
-
 void PipelineState::CreateTriangle( ID3D12Device* device
                                   , ID3D12RootSignature* rootSignature
                                   , const std::wstring& vsPath
@@ -44,8 +12,8 @@ void PipelineState::CreateTriangle( ID3D12Device* device
                                   , DXGI_FORMAT depthFormat )
 {
     // 셰이더 컴파일
-    auto vsBytecode = CompileShader(vsPath, "VSMain", "vs_5_1");
-    auto psBytecode = CompileShader(psPath, "PSMain", "ps_5_1");
+    auto vsBytecode = Shader::Compile(vsPath, "VSMain", "vs_5_1");
+    auto psBytecode = Shader::Compile(psPath, "PSMain", "ps_5_1");
 
     // Input Layout
     // Triangle.hlsl
@@ -106,8 +74,8 @@ void PipelineState::CreateDefault ( ID3D12Device* device
                                   , DXGI_FORMAT depthFormat )
 {
     // 셰이더 컴파일
-    auto vsBytecode = CompileShader(vsPath, "VSMain", "vs_5_1");
-    auto psBytecode = CompileShader(psPath, "PSMain", "ps_5_1");
+    auto vsBytecode = Shader::Compile(vsPath, "VSMain", "vs_5_1");
+    auto psBytecode = Shader::Compile(psPath, "PSMain", "ps_5_1");
 
     // Input Layout
     // Default.hlsl

@@ -35,5 +35,6 @@ private:
     // RenderItems
     std::vector<std::unique_ptr<RenderItem>> m_renderItems;
 
+    // TODO : 추후 Map으로 변경하여 여러대의 카메라를 사용가능하도록 변경
     Camera m_camera;
 };

@@ -5,6 +5,7 @@
 // ═══════════════════════════════════════════════════════════════════
 
 #include "Core/D3DUtil.h"
+#include "Core/DescriptorHeap.h"
 
 class SwapChain
 {
@@ -25,7 +26,7 @@ public:
     D3D12_CPU_DESCRIPTOR_HANDLE CurrentRTV() const;
 
 private:
-    void CreateRTVs(ID3D12Device* device);
+    void CreateRTV(ID3D12Device* device);
 
     ComPtr<IDXGISwapChain4> m_swapChain;
 
@@ -33,6 +34,5 @@ private:
     std::array<ComPtr<ID3D12Resource>, FRAME_BUFFER_COUNT> m_backBuffers;
 
     // RTV
-    ComPtr<ID3D12DescriptorHeap> m_rtvHeap;
-    UINT m_rtvDescriptorSize = 0;
+    DescriptorHeap m_rtvHeap;
 };

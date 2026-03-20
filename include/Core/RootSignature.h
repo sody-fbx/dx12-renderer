@@ -6,6 +6,12 @@
 
 #include "Core/D3DUtil.h"
 
+enum ROOT_SIGNATURE_TYPE
+{
+    ROOT_SIGNATURE_TYPE_EMPTY       = 0,
+    ROOT_SIGNATURE_TYPE_CBV         = 1,
+};
+
 class RootSignature
 {
 public:

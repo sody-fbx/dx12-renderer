@@ -2,7 +2,7 @@
 //  Renderer.cpp
 // ═══════════════════════════════════════════════════════════════════
 
-#include "Core/Renderer.h"
+#include "Renderer.h"
 
 #include "Scene/Camera.h"
 
@@ -124,13 +124,9 @@ void Renderer::UpdateConstantBuffers()
 
     curFrame.PassCB->CopyData(0, passData);
 
-    // ObjectCB (RenderItem별 갱신)
+    // ObjectCB
     for (auto& item : m_scene.GetRenderItems())
     {
-        // NumFramesDirty > 0이면 이 오브젝트의 CB를 갱신해야 함.
-        // World 행렬이 바뀔 때 NumFramesDirty = FRAME_BUFFER_COUNT로 세팅.
-        // 트리플 버퍼링이라 3개 FrameResource 모두 반영되어야 하므로
-        // 3프레임 동안 갱신 후 0이 되면 스킵.
         if (item->NumFramesDirty > 0)
         {
             ObjectConstants objData;

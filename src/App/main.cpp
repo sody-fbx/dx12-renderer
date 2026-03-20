@@ -6,7 +6,7 @@
 #include "App/Timer.h"
 #include "App/InputManager.h"
 
-#include "Core/Renderer.h"
+#include "Renderer.h"
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
 {

@@ -26,31 +26,23 @@ static ComPtr<ID3D12Resource> CreateDefaultBuffer( ID3D12Device* device
     bufferDesc.SampleDesc       = { 1, 0 };
     bufferDesc.Layout           = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 
-    ThrowIfFailed(
-            device->CreateCommittedResource(
-            &defaultHeap,
-            D3D12_HEAP_FLAG_NONE,
-            &bufferDesc,
-            D3D12_RESOURCE_STATE_COMMON,
-            nullptr,
-            IID_PPV_ARGS(&defaultBuffer)
-        )
-    );
+    ThrowIfFailed(device->CreateCommittedResource( &defaultHeap
+                                                 , D3D12_HEAP_FLAG_NONE
+                                                 , &bufferDesc
+                                                 , D3D12_RESOURCE_STATE_COMMON
+                                                 , nullptr
+                                                 , IID_PPV_ARGS(&defaultBuffer) ));
 
     // 2. Upload Heap 임시 버퍼 생성
     D3D12_HEAP_PROPERTIES uploadHeap = {};
     uploadHeap.Type = D3D12_HEAP_TYPE_UPLOAD;
 
-    ThrowIfFailed(
-        device->CreateCommittedResource(
-            &uploadHeap,
-            D3D12_HEAP_FLAG_NONE,
-            &bufferDesc,
-            D3D12_RESOURCE_STATE_GENERIC_READ,
-            nullptr,
-            IID_PPV_ARGS(&uploadBuffer)
-        )
-    );
+    ThrowIfFailed(device->CreateCommittedResource( &uploadHeap
+                                                 , D3D12_HEAP_FLAG_NONE
+                                                 , &bufferDesc
+                                                 , D3D12_RESOURCE_STATE_GENERIC_READ
+                                                 , nullptr
+                                                 , IID_PPV_ARGS(&uploadBuffer) ));
 
     // 3. CPU에서 Upload Heap에 데이터 복사
     void* mappedData = nullptr;

@@ -69,9 +69,6 @@
     <ClCompile Include="src\Core\RootSignature.cpp">
       <Filter>src\Core</Filter>
     </ClCompile>
-    <ClCompile Include="src\Core\Renderer.cpp">
-      <Filter>src\Core</Filter>
-    </ClCompile>
     <ClCompile Include="src\App\Timer.cpp">
       <Filter>src\App</Filter>
     </ClCompile>
@@ -92,6 +89,12 @@
     </ClCompile>
     <ClCompile Include="src\Scene\Scene.cpp">
       <Filter>src\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\DescriptorHeap.cpp">
+      <Filter>src\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -117,9 +120,6 @@
       <Filter>include\Core</Filter>
     </ClInclude>
     <ClInclude Include="include\Core\RootSignature.h">
-      <Filter>include\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Core\Renderer.h">
       <Filter>include\Core</Filter>
     </ClInclude>
     <ClInclude Include="include\App\Timer.h">
@@ -163,6 +163,18 @@
     </ClInclude>
     <ClInclude Include="include\Scene\Scene.h">
       <Filter>include\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\DescriptorHeap.h">
+      <Filter>include\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Shaders\ShaderUtil.h">
+      <Filter>include\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Pass\PassUtil.h">
+      <Filter>include\Pass</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Renderer.h">
+      <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

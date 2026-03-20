@@ -5,6 +5,7 @@
 // ═══════════════════════════════════════════════════════════════════
 
 #include "Core/D3DUtil.h"
+#include "Shaders/ShaderUtil.h"
 
 class PipelineState
 {
@@ -26,9 +27,5 @@ public:
     ID3D12PipelineState* Get() const { return m_pso.Get(); }
 
 private:
-    ComPtr<ID3DBlob> CompileShader( const std::wstring& path
-                                  , const std::string& entryPoint
-                                  , const std::string& target);
-
     ComPtr<ID3D12PipelineState> m_pso;
 };

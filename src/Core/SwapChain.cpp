@@ -22,43 +22,32 @@ void SwapChain::Initialize( IDXGIFactory4* factory
     desc.Flags       = DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
 
     ComPtr<IDXGISwapChain1> swapChain1;
-    ThrowIfFailed(
-        factory->CreateSwapChainForHwnd(
-            queue,
-            hwnd,
-            &desc,
-            nullptr,    // Fullscreen desc
-            nullptr,    // Restrict to output
-            &swapChain1
-        )
-    );
+    ThrowIfFailed( factory->CreateSwapChainForHwnd( queue
+                                                  , hwnd
+                                                  , &desc
+                                                  , nullptr
+                                                  , nullptr
+                                                  , &swapChain1 ));
 
     ThrowIfFailed(swapChain1.As(&m_swapChain));
 
-    // RTV & Depth Buffer 생성
-    CreateRTVs(device);
+    // RTV 생성
+    CreateRTV(device);
 }
 
-void SwapChain::CreateRTVs(ID3D12Device* device)
+void SwapChain::CreateRTV(ID3D12Device* device)
 {
-    // RTV (Render Target View) Descriptor Heap
-    D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
-    rtvHeapDesc.NumDescriptors = FRAME_BUFFER_COUNT;
-    rtvHeapDesc.Type           = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-    rtvHeapDesc.Flags          = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-
-    ThrowIfFailed(device->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&m_rtvHeap)));
-
-    m_rtvDescriptorSize = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-
-    // 각 Back Buffer에 대해 RTV 생성
-    D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = m_rtvHeap->GetCPUDescriptorHandleForHeapStart();
+    m_rtvHeap.Initialize( device
+                        , D3D12_DESCRIPTOR_HEAP_TYPE_RTV
+                        , FRAME_BUFFER_COUNT
+                        , false);
 
     for (UINT i = 0; i < FRAME_BUFFER_COUNT; ++i)
     {
         ThrowIfFailed(m_swapChain->GetBuffer(i, IID_PPV_ARGS(&m_backBuffers[i])));
-        device->CreateRenderTargetView(m_backBuffers[i].Get(), nullptr, rtvHandle);
-        rtvHandle.ptr += m_rtvDescriptorSize;
+        device->CreateRenderTargetView( m_backBuffers[i].Get()
+                                      , nullptr
+                                      , m_rtvHeap.Allocate());
     }
 }
 
@@ -91,7 +80,7 @@ void SwapChain::Resize(ID3D12Device* device, int width, int height)
     );
 
     // RTV 재생성
-    CreateRTVs(device);
+    CreateRTV(device);
 }
 
 UINT SwapChain::CurrentBackBufferIndex() const
@@ -106,7 +95,5 @@ ID3D12Resource* SwapChain::CurrentBackBuffer() const
 
 D3D12_CPU_DESCRIPTOR_HANDLE SwapChain::CurrentRTV() const
 {
-    D3D12_CPU_DESCRIPTOR_HANDLE handle = m_rtvHeap->GetCPUDescriptorHandleForHeapStart();
-    handle.ptr += static_cast<SIZE_T>(CurrentBackBufferIndex()) * m_rtvDescriptorSize;
-    return handle;
+    return m_rtvHeap.GetCPUHandle(CurrentBackBufferIndex());
 }

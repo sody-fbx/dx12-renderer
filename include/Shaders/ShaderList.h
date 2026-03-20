@@ -9,7 +9,6 @@
     X(DEFAULT,     L"src/Shaders/Default.hlsl")         \
     X(TRIANGLE,    L"src/Shaders/Triangle.hlsl")        \
 
-
 // ShaderType enum 생성
 enum class SHADERTYPE : int
 {

@@ -4,10 +4,7 @@
 //  ForwardPass.h
 // ═══════════════════════════════════════════════════════════════════
 
-#include "Pass/IRenderPass.h"
-#include "Core/RootSignature.h"
-#include "Core/PipelineState.h"
-#include "Shaders/ShaderList.h"
+#include "Pass/PassUtil.h"
 
 class ForwardPass : public IRenderPass
 {
@@ -16,23 +13,12 @@ public:
     void Execute(const FrameContext& ctx) override;
     void OnResize(ID3D12Device* device, int width, int height) override;
 
-    void AddShader( ID3D12Device* device
-                  , D3D12_ROOT_PARAMETER_TYPE rootType
-                  , SHADERTYPE shaderType);
-
-private:
-    void CreateDSV(ID3D12Device* device, int width, int height);
-
 private:
     // DSV
-    ComPtr<ID3D12Resource>       m_depthBuffer;
-    ComPtr<ID3D12DescriptorHeap> m_dsvHeap;
+    DepthTarget m_depth;
 
     // PSO
-    struct Shader
-    {
-        RootSignature  RootSig;
-        PipelineState  Pso;
-    };
-    Shader m_shader;
+    // TODO : 추후 Map으로 만들어, 프로젝트 실행 시 Pipeline을 모두 미리 만들어두고
+    // Object에서 골라서 사용할 수 있도록 변경 예정
+    PipelineSet m_pipelineSet;
 };
