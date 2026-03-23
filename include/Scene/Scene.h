@@ -7,6 +7,7 @@
 #include "Core/D3DUtil.h"
 #include "Scene/Camera.h"
 #include "Scene/RenderItem.h"
+#include "Scene/Light.h"
 
 #include "Resource/GeometryGenerator.h"
 
@@ -25,6 +26,9 @@ public: // Getter
     const std::vector<std::unique_ptr<RenderItem>>& GetRenderItems() const { return m_renderItems; }
     UINT GetObjectCount() const { return (UINT)m_renderItems.size(); }
 
+    // Light
+    DirectionalLight& GetDirLight() { return m_dirLight; }
+
 private:
     void BuildGeometry(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList);
     void BuildRenderItems();
@@ -37,4 +41,7 @@ private:
 
     // TODO : 추후 Map으로 변경하여 여러대의 카메라를 사용가능하도록 변경
     Camera m_camera;
+
+    // Light
+    DirectionalLight m_dirLight;
 };

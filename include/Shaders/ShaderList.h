@@ -6,8 +6,9 @@
 
 // X(ShaderName, FilePath)
 #define SHADER_LIST \
-    X(DEFAULT,     L"src/Shaders/Default.hlsl")         \
-    X(TRIANGLE,    L"src/Shaders/Triangle.hlsl")        \
+    X(DEFAULT,          L"src/Shaders/Default.hlsl")                \
+    X(TRIANGLE,         L"src/Shaders/Triangle.hlsl")               \
+    X(LIGHT_BLPH,       L"src/Shaders/Light_BlinnPhong.hlsl")       \
 
 // ShaderType enum 생성
 enum class SHADERTYPE : int

@@ -26,6 +26,10 @@ void Renderer::Initialize(HWND hwnd, int width, int height)
     mainCam.Initialize(5.0f, 45.0f, (float)m_width / m_height, 0.1f, 100.0f);
     m_scene.SetCamera(mainCam);
 
+    m_scene.GetDirLight().Direction = { 0.5f, -1.0f, 0.3f };
+    m_scene.GetDirLight().Color = { 1.0f, 1.0f, 0.9f };
+    m_scene.GetDirLight().Intensity = 1.0f;
+
     m_commandList.Reset(0, nullptr);
     m_scene.Initialize(m_device.GetDevice(), m_commandList.Get());
     m_commandList.Close();
@@ -121,6 +125,7 @@ void Renderer::UpdateConstantBuffers()
     XMStoreFloat4x4(&passData.Proj, XMMatrixTranspose(proj));
     XMStoreFloat4x4(&passData.ViewProj, XMMatrixTranspose(viewProj));
     passData.EyePos = m_scene.GetCamera().GetPosition();
+    passData.DirLight = m_scene.GetDirLight();
 
     curFrame.PassCB->CopyData(0, passData);
 

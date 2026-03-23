@@ -4,7 +4,6 @@
 //  Camera.h — 오비트 카메라
 // ═══════════════════════════════════════════════════════════════════
 
-#include "Core/D3DUtil.h"
 #include "Core/MathHelper.h"
 
 class Camera

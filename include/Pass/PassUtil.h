@@ -50,6 +50,12 @@ struct PipelineSet
 				              , shaderPath, shaderPath
 				              , BACK_BUFFER_FORMAT, DEPTH_FORMAT);
 			break;
+        case SHADERTYPE::LIGHT_BLPH:
+            shaderPath = GetShaderPath(SHADERTYPE::LIGHT_BLPH);
+			Pso.CreateDefault( device
+				             , RootSignature.Get()
+				             , shaderPath, shaderPath
+				             , BACK_BUFFER_FORMAT, DEPTH_FORMAT);
 		default:
 			break;
 		}

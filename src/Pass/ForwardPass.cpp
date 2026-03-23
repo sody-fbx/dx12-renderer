@@ -6,7 +6,7 @@
 
 void ForwardPass::Setup(ID3D12Device* device, int width, int height)
 {
-    m_pipelineSet.Create(device, ROOT_SIGNATURE_TYPE_CBV, SHADERTYPE::DEFAULT);
+    m_pipelineSet.Create(device, ROOT_SIGNATURE_TYPE_CBV, SHADERTYPE::LIGHT_BLPH);
     m_depth.Create(device, width, height);
 }
 
@@ -44,14 +44,6 @@ void ForwardPass::Execute(const FrameContext& ctx)
 
     // PassCB 바인딩
     cmdList->SetGraphicsRootConstantBufferView(1, curFrame->PassCB->GetElementGPUAddress(0));
-
-    // ── Step 4: Shadow Map SRV 바인딩 ──
-    //if (m_hasShadowMap && m_srvHeap)
-    //{
-    //    ID3D12DescriptorHeap* heaps[] = { m_srvHeap };
-    //    cmdList->SetDescriptorHeaps(1, heaps);
-    //    cmdList->SetGraphicsRootDescriptorTable(2, m_shadowMapSRV);
-    //}
 
     // RenderItem(Mesh) Draw
     for (auto& item : *ctx.RenderItems)

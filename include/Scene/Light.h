@@ -1,27 +1,16 @@
-﻿#pragma once
+#pragma once
 
 // ═══════════════════════════════════════════════════════════════════
-//  RenderItem.h
+//  Light.h — 라이트 데이터 구조체
 // ═══════════════════════════════════════════════════════════════════
 
 #include "Core/MathHelper.h"
-#include "Resource/Mesh.h"
 
-struct RenderItem
+struct DirectionalLight
 {
-    XMFLOAT4X4 World;
-
-    // 해당 오브젝트가 참조하는 Mesh
-    Mesh* MeshRef = nullptr;
-
-    // CB에서 해당 오브젝트의 인덱스
-    UINT ObjCBIndex = 0;
-
-    // CB 갱신 필요 수
-    int NumFramesDirty = FRAME_BUFFER_COUNT;
-
-    RenderItem()
-    {
-        XMStoreFloat4x4(&World, XMMatrixIdentity());
-    }
+    // 셰이더에 전달될 데이터 (16바이트 정렬 주의)
+    XMFLOAT3 Direction = { 0.5f, -1.0f, 0.3f };
+    float    Padding1  = 0.0f;
+    XMFLOAT3 Color     = { 1.0f, 1.0f, 0.9f };
+    float    Intensity = 1.0f;
 };

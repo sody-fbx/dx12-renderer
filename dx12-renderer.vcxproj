@@ -60,6 +60,7 @@
     <ClInclude Include="include\Resource\UploadBuffer.h" />
     <ClInclude Include="include\Resource\Vertex.h" />
     <ClInclude Include="include\Scene\Camera.h" />
+    <ClInclude Include="include\Scene\Light.h" />
     <ClInclude Include="include\Scene\RenderItem.h" />
     <ClInclude Include="include\Scene\Scene.h" />
     <ClInclude Include="include\Shaders\ShaderList.h" />
@@ -69,6 +70,10 @@
     <FxCompile Include="src\Shaders\Default.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VSMain</EntryPointName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="src\Shaders\Light_BlinnPhong.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VSMain</EntryPointName>
     </FxCompile>
     <FxCompile Include="src\Shaders\Triangle.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VSMain</EntryPointName>

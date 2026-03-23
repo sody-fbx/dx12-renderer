@@ -6,6 +6,7 @@
 
 #include "Core/MathHelper.h"
 #include "Resource/UploadBuffer.h"
+#include "Scene/Light.h"
 
 struct ObjectConstants
 {
@@ -26,7 +27,7 @@ struct PassConstants
     float      Padding1    = 0.0f;   // 16바이트 정렬용
     XMFLOAT4   AmbientLight = { 0.1f, 0.1f, 0.1f, 1.0f };
 
-    // TODO : Light 구조체 추가
+    DirectionalLight DirLight;
 
     PassConstants()
     {
