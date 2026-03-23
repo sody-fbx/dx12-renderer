@@ -31,6 +31,7 @@
     <ClCompile Include="src\Core\RootSignature.cpp" />
     <ClCompile Include="src\Core\SwapChain.cpp" />
     <ClCompile Include="src\Pass\ForwardPass.cpp" />
+    <ClCompile Include="src\Pass\ShadowPass.cpp" />
     <ClCompile Include="src\Renderer.cpp" />
     <ClCompile Include="src\Resource\GeometryGenerator.cpp" />
     <ClCompile Include="src\Resource\Mesh.cpp" />
@@ -53,6 +54,7 @@
     <ClInclude Include="include\Pass\ForwardPass.h" />
     <ClInclude Include="include\Pass\IRenderPass.h" />
     <ClInclude Include="include\Pass\PassUtil.h" />
+    <ClInclude Include="include\Pass\ShadowPass.h" />
     <ClInclude Include="include\Renderer.h" />
     <ClInclude Include="include\Resource\FrameResource.h" />
     <ClInclude Include="include\Resource\GeometryGenerator.h" />
@@ -72,6 +74,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="src\Shaders\Light_BlinnPhong.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VSMain</EntryPointName>
+    </FxCompile>
+    <FxCompile Include="src\Shaders\Shadow.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VSMain</EntryPointName>
     </FxCompile>

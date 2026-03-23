@@ -1,31 +1,26 @@
 ﻿#pragma once
 
 // ═══════════════════════════════════════════════════════════════════
-//  ForwardPass.h
+//  ShadowPass.h
 // ═══════════════════════════════════════════════════════════════════
 
 #include "Pass/PassUtil.h"
 
-class ForwardPass : public IRenderPass
+class ShadowPass : public IRenderPass
 {
 public:
     void Setup(ID3D12Device* device, int width, int height) override;
     void Execute(const FrameContext& ctx) override;
-    void OnResize(ID3D12Device* device, int width, int height) override;
 
-    void SetShadowMap(const ShadowMap* shadowMap) { m_shadowMap = shadowMap; }
+public: // Getter
+    const ShadowMap& GetShadowMap() const { return m_shadowMap; }
 
 private:
-    void CreateDepthTarget(ID3D12Device* device, int width, int height);
+    void CreateShadowMap(ID3D12Device* device);
 
-    // DSV
-    DepthTarget m_depth;
+    // Shadow Map
+    ShadowMap m_shadowMap;
 
-    // PSO
-    // TODO : 추후 Map으로 만들어, 프로젝트 실행 시 Pipeline을 모두 미리 만들어두고
-    // Object에서 골라서 사용할 수 있도록 변경 예정
+    // Pipeline
     PipelineSet m_pipelineSet;
-
-    // ShadowMap
-    const ShadowMap* m_shadowMap = nullptr;
 };

@@ -18,7 +18,7 @@ struct ObjectConstants
     }
 };
 
-struct PassConstants
+struct FPConstants          //ForwardPassConstants
 {
     XMFLOAT4X4 View       = {};
     XMFLOAT4X4 Proj       = {};
@@ -28,19 +28,32 @@ struct PassConstants
     XMFLOAT4   AmbientLight = { 0.1f, 0.1f, 0.1f, 1.0f };
 
     DirectionalLight DirLight;
-
-    PassConstants()
+    XMFLOAT4X4 LightViewProj = {};
+    
+    FPConstants()
     {
         XMStoreFloat4x4(&View, XMMatrixIdentity());
         XMStoreFloat4x4(&Proj, XMMatrixIdentity());
         XMStoreFloat4x4(&ViewProj, XMMatrixIdentity());
+        XMStoreFloat4x4(&LightViewProj, XMMatrixIdentity());
+    }
+};
+
+struct SPConstants          // ShadowPassConstants
+{
+    XMFLOAT4X4 LightViewProj = {};
+
+    SPConstants()
+    {
+        XMStoreFloat4x4(&LightViewProj, XMMatrixIdentity());
     }
 };
 
 struct FrameResource
 {
     std::unique_ptr<UploadBuffer<ObjectConstants>> ObjectCB = nullptr;
-    std::unique_ptr<UploadBuffer<PassConstants>>   PassCB   = nullptr;
+    std::unique_ptr<UploadBuffer<FPConstants>>   FPCB   = nullptr;
+    std::unique_ptr<UploadBuffer<SPConstants>>   SPCB   = nullptr;
 
     // 이 프레임의 GPU 작업이 완료되었는지 추적하는 Fence 값
     UINT64 FenceValue = 0;
@@ -48,6 +61,7 @@ struct FrameResource
     void Initialize(ID3D12Device* device, UINT objectCount)
     {
         ObjectCB = std::make_unique<UploadBuffer<ObjectConstants>>(device, objectCount, true);
-        PassCB   = std::make_unique<UploadBuffer<PassConstants>>(device, 1, true);
+        FPCB     = std::make_unique<UploadBuffer<FPConstants>>(device, 1, true);
+        SPCB     = std::make_unique<UploadBuffer<SPConstants>>(device, 1, true);
     }
 };

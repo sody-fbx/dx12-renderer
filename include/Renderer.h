@@ -11,6 +11,7 @@
 
 #include "Pass/IRenderPass.h"
 #include "Pass/ForwardPass.h"
+#include "Pass/ShadowPass.h"
 
 #include "Resource/Mesh.h"
 #include "Resource/FrameResource.h"
@@ -44,6 +45,7 @@ private:
     // Pass
     std::vector<IRenderPass*>    m_passes;
     std::unique_ptr<ForwardPass> m_forwardPass;
+    std::unique_ptr<ShadowPass>  m_shadowPass;
 
     // Scene
     Scene m_scene;

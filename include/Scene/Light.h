@@ -1,16 +1,34 @@
 #pragma once
 
 // ═══════════════════════════════════════════════════════════════════
-//  Light.h — 라이트 데이터 구조체
+//  Light.h
 // ═══════════════════════════════════════════════════════════════════
 
 #include "Core/MathHelper.h"
 
 struct DirectionalLight
 {
-    // 셰이더에 전달될 데이터 (16바이트 정렬 주의)
     XMFLOAT3 Direction = { 0.5f, -1.0f, 0.3f };
     float    Padding1  = 0.0f;
     XMFLOAT3 Color     = { 1.0f, 1.0f, 0.9f };
     float    Intensity = 1.0f;
+
+    XMMATRIX GetLightViewMatrix() const
+    {
+        XMVECTOR lightDir = XMVector3Normalize(XMLoadFloat3(&Direction));
+        XMVECTOR lightPos = XMVectorScale(lightDir, -20.0f);
+        XMVECTOR target   = XMVectorZero();
+        XMVECTOR up       = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+        return XMMatrixLookAtLH(lightPos, target, up);
+    }
+
+    XMMATRIX GetLightProjMatrix() const
+    {
+        return XMMatrixOrthographicLH(20.0f, 20.0f, 0.1f, 50.0f);
+    }
+
+    XMMATRIX GetLightViewProjMatrix() const
+    {
+        return GetLightViewMatrix() * GetLightProjMatrix();
+    }
 };

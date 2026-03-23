@@ -245,6 +245,65 @@ namespace GeometryGenerator
 			}
 		}
 
+		// Top Cap
+		UINT topBaseIndex = (UINT)mesh.Vertices.size();
+		float topY = 0.5f * height;
+		float dTheta = 2.0f * XM_PI / sliceCount;
+
+		for (UINT i = 0; i <= sliceCount; ++i)
+		{
+			float c = cosf(i * dTheta), s = sinf(i * dTheta);
+			VertexTex v;
+			v.Position = { topRadius * c, topY, topRadius * s };
+			v.Normal = { 0.0f, 1.0f, 0.0f };
+			v.TexCoord = { c * 0.5f + 0.5f, s * 0.5f + 0.5f };
+			mesh.Vertices.push_back(v);
+		}
+
+		// 중심점
+		VertexTex topCenter;
+		topCenter.Position = { 0.0f, topY, 0.0f };
+		topCenter.Normal = { 0.0f, 1.0f, 0.0f };
+		topCenter.TexCoord = { 0.5f, 0.5f };
+		mesh.Vertices.push_back(topCenter);
+		UINT topCenterIndex = (UINT)mesh.Vertices.size() - 1;
+
+		for (UINT i = 0; i < sliceCount; ++i)
+		{
+			mesh.Indices.push_back(topCenterIndex);
+			mesh.Indices.push_back(topBaseIndex + i + 1);
+			mesh.Indices.push_back(topBaseIndex + i);
+		}
+
+		// Bottom Cap
+		UINT botBaseIndex = (UINT)mesh.Vertices.size();
+		float botY = -0.5f * height;
+
+		for (UINT i = 0; i <= sliceCount; ++i)
+		{
+			float c = cosf(i * dTheta), s = sinf(i * dTheta);
+			VertexTex v;
+			v.Position = { bottomRadius * c, botY, bottomRadius * s };
+			v.Normal = { 0.0f, -1.0f, 0.0f };
+			v.TexCoord = { c * 0.5f + 0.5f, s * 0.5f + 0.5f };
+			mesh.Vertices.push_back(v);
+		}
+
+		// 중심점
+		VertexTex botCenter;
+		botCenter.Position = { 0.0f, botY, 0.0f };
+		botCenter.Normal = { 0.0f, -1.0f, 0.0f };
+		botCenter.TexCoord = { 0.5f, 0.5f };
+		mesh.Vertices.push_back(botCenter);
+		UINT botCenterIndex = (UINT)mesh.Vertices.size() - 1;
+
+		for (UINT i = 0; i < sliceCount; ++i)
+		{
+			mesh.Indices.push_back(botCenterIndex);
+			mesh.Indices.push_back(botBaseIndex + i);
+			mesh.Indices.push_back(botBaseIndex + i + 1);
+		}
+
 		return mesh;
 	}
 } // namespace GeometryGenerator

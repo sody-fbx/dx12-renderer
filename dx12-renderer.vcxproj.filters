@@ -96,6 +96,9 @@
     <ClCompile Include="src\Renderer.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\Pass\ShadowPass.cpp">
+      <Filter>src\Pass</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Core\D3DUtil.h">
@@ -176,12 +179,24 @@
     <ClInclude Include="include\Renderer.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="include\Scene\Light.h">
+      <Filter>include\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Pass\ShadowPass.h">
+      <Filter>include\Pass</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="src\Shaders\Triangle.hlsl">
       <Filter>src\Shaders</Filter>
     </FxCompile>
     <FxCompile Include="src\Shaders\Default.hlsl">
+      <Filter>src\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="src\Shaders\Light_BlinnPhong.hlsl">
+      <Filter>src\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="src\Shaders\Shadow.hlsl">
       <Filter>src\Shaders</Filter>
     </FxCompile>
   </ItemGroup>

@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════════
-//  Default.hlsl — Blinn-Phong
+//  Default.hlsl — Blinn-Phong + Shadow Map
 // ═══════════════════════════════════════════════════════════════════
 
 cbuffer ObjectCB : register(b0)
@@ -15,7 +15,7 @@ struct DirectionalLightData
     float  Intensity;
 };
 
-cbuffer PassCB : register(b1)
+cbuffer FPCB : register(b1)
 {
     float4x4 gView;
     float4x4 gProj;
@@ -25,7 +25,11 @@ cbuffer PassCB : register(b1)
     float4   gAmbientLight;
 
     DirectionalLightData gDirLight;
+    float4x4 gLightViewProj;
 };
+
+Texture2D gShadowMap : register(t0);
+SamplerComparisonState gShadowSampler : register(s0);
 
 struct VSInput
 {
@@ -59,6 +63,42 @@ VSOutput VSMain(VSInput input)
 }
 
 // ═══════════════════════════════════════════════════════════════════
+//  Shadow 계산
+// ═══════════════════════════════════════════════════════════════════
+float CalcShadow(float3 posW)
+{
+    float4 lightClip = mul(float4(posW, 1.0f), gLightViewProj);
+    lightClip.xyz /= lightClip.w;
+
+    float2 shadowUV;
+    shadowUV.x = lightClip.x * 0.5f + 0.5f;
+    shadowUV.y = -lightClip.y * 0.5f + 0.5f;
+
+    float currentDepth = lightClip.z;
+
+    if (shadowUV.x < 0 || shadowUV.x > 1 || shadowUV.y < 0 || shadowUV.y > 1)
+        return 1.0f;
+
+    // PCF 3x3
+    float shadow = 0.0f;
+    float2 texelSize = float2(1.0f / 2048.0f, 1.0f / 2048.0f);
+
+    [unroll]
+    for (int x = -1; x <= 1; x++)
+    {
+        [unroll]
+        for (int y = -1; y <= 1; y++)
+        {
+            shadow += gShadowMap.SampleCmpLevelZero( gShadowSampler
+                                                    , shadowUV + float2(x, y) * texelSize
+                                                    , currentDepth);
+        }
+    }
+
+    return shadow / 9.0f;
+}
+
+// ═══════════════════════════════════════════════════════════════════
 //  Pixel Shader — Blinn-Phong + Shadow
 // ═══════════════════════════════════════════════════════════════════
 float4 PSMain(VSOutput input) : SV_TARGET
@@ -80,9 +120,12 @@ float4 PSMain(VSOutput input) : SV_TARGET
     // Ambient
     float3 ambient = gAmbientLight.rgb;
 
+    // Shadow
+    float shadow = CalcShadow(input.PosW);
+
     float3 baseColor = float3(0.7f, 0.7f, 0.7f);
 
-    float3 result = ambient * baseColor + diffuse * baseColor + specular;
+    float3 result = ambient * baseColor + shadow * (diffuse * baseColor + specular);
 
     return float4(result, 1.0f);
 }

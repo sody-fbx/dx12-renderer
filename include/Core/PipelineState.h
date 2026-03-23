@@ -24,6 +24,11 @@ public:
                        , DXGI_FORMAT backBufferFormat
                        , DXGI_FORMAT depthFormat );
 
+    void CreateShadow ( ID3D12Device* device
+                      , ID3D12RootSignature* rootSignature
+                      , const std::wstring& vsPath
+                      , DXGI_FORMAT depthFormat );
+
     ID3D12PipelineState* Get() const { return m_pso.Get(); }
 
 private:

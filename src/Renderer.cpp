@@ -44,11 +44,17 @@ void Renderer::Initialize(HWND hwnd, int width, int height)
 
 void Renderer::BuildPasses()
 {
+    // ShadowPass
+    m_shadowPass = std::make_unique<ShadowPass>();
+    m_shadowPass->Setup(m_device.GetDevice(), m_width, m_height);
+
     // ForwardPass
     m_forwardPass = std::make_unique<ForwardPass>();
     m_forwardPass->Setup(m_device.GetDevice(), m_width, m_height);
+    m_forwardPass->SetShadowMap(&m_shadowPass->GetShadowMap());
 
     m_passes.clear();
+    m_passes.push_back(m_shadowPass.get());
     m_passes.push_back(m_forwardPass.get());
 }
 
@@ -71,15 +77,6 @@ void Renderer::BeginFrame()
     // CommandList 리셋
     m_commandList.Reset(frameIndex, nullptr);
     auto* cmdList = m_commandList.Get();
-
-    // Barrier: PRESENT -> RENDER_TARGET
-    D3D12_RESOURCE_BARRIER barrier = {};
-    barrier.Type                   = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-    barrier.Transition.pResource   = m_swapChain.CurrentBackBuffer();
-    barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
-    barrier.Transition.StateAfter  = D3D12_RESOURCE_STATE_RENDER_TARGET;
-    barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-    cmdList->ResourceBarrier(1, &barrier);
 }
 
 void Renderer::Render()
@@ -115,19 +112,29 @@ void Renderer::UpdateConstantBuffers()
     UINT frameIndex = m_swapChain.CurrentBackBufferIndex();
     auto& curFrame = m_frameRes[frameIndex];
 
-    // PassCB 갱신: View / Proj
-    XMMATRIX view = m_scene.GetCamera().GetViewMatrix();
-    XMMATRIX proj = m_scene.GetCamera().GetProjMatrix();
+    Camera& camera = m_scene.GetCamera();
+    DirectionalLight& light = m_scene.GetDirLight();
+
+    // SPCB 갱신 : light shadow
+    XMMATRIX lightVP = light.GetLightViewProjMatrix();
+    SPConstants SPassData;
+    XMStoreFloat4x4(&SPassData.LightViewProj, XMMatrixTranspose(lightVP));
+
+    // FPCB 갱신 : View / Proj
+    XMMATRIX view = camera.GetViewMatrix();
+    XMMATRIX proj = camera.GetProjMatrix();
     XMMATRIX viewProj = view * proj;
 
-    PassConstants passData;
-    XMStoreFloat4x4(&passData.View, XMMatrixTranspose(view));
-    XMStoreFloat4x4(&passData.Proj, XMMatrixTranspose(proj));
-    XMStoreFloat4x4(&passData.ViewProj, XMMatrixTranspose(viewProj));
-    passData.EyePos = m_scene.GetCamera().GetPosition();
-    passData.DirLight = m_scene.GetDirLight();
+    FPConstants FPassData;
+    XMStoreFloat4x4(&FPassData.View, XMMatrixTranspose(view));
+    XMStoreFloat4x4(&FPassData.Proj, XMMatrixTranspose(proj));
+    XMStoreFloat4x4(&FPassData.ViewProj, XMMatrixTranspose(viewProj));
+    FPassData.EyePos = camera.GetPosition();
+    FPassData.DirLight = light;
+    XMStoreFloat4x4(&FPassData.LightViewProj, XMMatrixTranspose(lightVP));
 
-    curFrame.PassCB->CopyData(0, passData);
+    curFrame.SPCB->CopyData(0, SPassData);
+    curFrame.FPCB->CopyData(0, FPassData);
 
     // ObjectCB
     for (auto& item : m_scene.GetRenderItems())
@@ -146,15 +153,6 @@ void Renderer::UpdateConstantBuffers()
 void Renderer::EndFrame()
 {
     auto* cmdList = m_commandList.Get();
-
-    // Resource Barrier: RENDER_TARGET -> PRESENT
-    D3D12_RESOURCE_BARRIER barrier = {};
-    barrier.Type                   = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-    barrier.Transition.pResource   = m_swapChain.CurrentBackBuffer();
-    barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
-    barrier.Transition.StateAfter  = D3D12_RESOURCE_STATE_PRESENT;
-    barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-    cmdList->ResourceBarrier(1, &barrier);
 
     m_commandList.Close();
     m_commandQueue.ExecuteCommandList(m_commandList.Get());
