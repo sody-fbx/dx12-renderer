@@ -12,6 +12,9 @@
 #include "Pass/IRenderPass.h"
 #include "Pass/ForwardPass.h"
 #include "Pass/ShadowPass.h"
+#include "Pass/ImGuiPass.h"
+
+#include "imgui_impl_win32.h"
 
 #include "Resource/Mesh.h"
 #include "Resource/FrameResource.h"
@@ -34,6 +37,7 @@ private:
 
     void BuildPasses();
     void UpdateConstantBuffers();
+    void DrawImGui();
 
 private:
     // DX12 Core Module
@@ -46,6 +50,7 @@ private:
     std::vector<IRenderPass*>    m_passes;
     std::unique_ptr<ForwardPass> m_forwardPass;
     std::unique_ptr<ShadowPass>  m_shadowPass;
+    std::unique_ptr<ImGuiPass>   m_imGuiPass;
 
     // Scene
     Scene m_scene;
@@ -59,6 +64,7 @@ private:
     // 프레임 동기화
     std::array<UINT64, FRAME_BUFFER_COUNT> m_frameFenceValues = {};
 
+    HWND m_hwnd;
     int m_width  = 0;
     int m_height = 0;
 };

@@ -5,7 +5,14 @@
 // ═══════════════════════════════════════════════════════════════════
 
 #include "Core/D3DUtil.h"
+#include "imgui.h"
+
 #include <functional>
+
+// ImGui Win32 핸들러 (imgui_impl_win32.h)
+// Window.cpp에서 호출하기 위해 extern 선언
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(
+    HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 class Window
 {

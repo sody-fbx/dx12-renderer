@@ -66,6 +66,10 @@ bool Window::ProcessMessages()
 
 LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
+    // ImGui가 입력을 처리하면 true 반환
+    if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wParam, lParam))
+        return true;
+
     switch (msg)
     {
     case WM_SIZE:

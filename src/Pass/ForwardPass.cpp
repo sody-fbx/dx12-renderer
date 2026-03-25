@@ -15,15 +15,6 @@ void ForwardPass::Execute(const FrameContext& ctx)
     auto* cmdList = ctx.CmdList;
     auto* curFrame = ctx.CurrentFrameResource;
 
-    // Barrier: PRESENT -> RENDER_TARGET
-    D3D12_RESOURCE_BARRIER barrier = {};
-    barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-    barrier.Transition.pResource = ctx.BackBuffer;
-    barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
-    barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
-    barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-    cmdList->ResourceBarrier(1, &barrier);
-
     // Viewport & Scissor
     D3D12_VIEWPORT viewport = {};
     viewport.TopLeftX = 0.0f;
@@ -77,14 +68,6 @@ void ForwardPass::Execute(const FrameContext& ctx)
 
         cmdList->DrawIndexedInstanced(item->MeshRef->GetIndexCount(), 1, 0, 0, 0);
     }
-
-    // Resource Barrier: RENDER_TARGET -> PRESENT
-    barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-    barrier.Transition.pResource = ctx.BackBuffer;
-    barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
-    barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
-    barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-    cmdList->ResourceBarrier(1, &barrier);
 }
 
 void ForwardPass::OnResize(ID3D12Device* device, int width, int height)

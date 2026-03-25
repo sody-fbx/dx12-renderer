@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 // ═══════════════════════════════════════════════════════════════════
 //  Mesh.h — Vertex & Index Buffer 관리

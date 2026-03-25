@@ -15,7 +15,7 @@ void ShadowPass::Execute(const FrameContext& ctx)
     auto* cmdList  = ctx.CmdList;
     auto* curFrame = ctx.CurrentFrameResource;
 
-    // Barrier: PIXEL_SHADER_RESOURCE → DEPTH_WRITE
+    // Barrier: PIXEL_SHADER_RESOURCE -> DEPTH_WRITE
     D3D12_RESOURCE_BARRIER barrier = {};
     barrier.Type                   = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
     barrier.Transition.pResource   = m_shadowMap.Texture.Get();
@@ -61,7 +61,7 @@ void ShadowPass::Execute(const FrameContext& ctx)
         cmdList->DrawIndexedInstanced(item->MeshRef->GetIndexCount(), 1, 0, 0, 0);
     }
 
-    // Barrier: DEPTH_WRITE → PIXEL_SHADER_RESOURCE
+    // Barrier: DEPTH_WRITE -> PIXEL_SHADER_RESOURCE
     barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_DEPTH_WRITE;
     barrier.Transition.StateAfter  = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
     cmdList->ResourceBarrier(1, &barrier);

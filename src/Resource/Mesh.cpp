@@ -1,4 +1,4 @@
-// ═══════════════════════════════════════════════════════════════════
+﻿// ═══════════════════════════════════════════════════════════════════
 //  Mesh.cpp
 // ═══════════════════════════════════════════════════════════════════
 
@@ -51,7 +51,7 @@ static ComPtr<ID3D12Resource> CreateDefaultBuffer( ID3D12Device* device
     uploadBuffer->Unmap(0, nullptr);
 
     // 4. GPU에게 Upload -> Default 복사 명령 기록
-    // Resource Barrier: COMMON -> COPY_DEST 전이
+    // Barrier: COMMON -> COPY_DEST
     D3D12_RESOURCE_BARRIER barrier = {};
     barrier.Type                   = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
     barrier.Transition.pResource   = defaultBuffer.Get();
@@ -63,7 +63,7 @@ static ComPtr<ID3D12Resource> CreateDefaultBuffer( ID3D12Device* device
     // 복사 명령
     cmdList->CopyBufferRegion( defaultBuffer.Get(), 0, uploadBuffer.Get(), 0, byteSize);
 
-    // Resource Barrier: COPY_DEST -> GENERIC_READ 전이
+    // Barrier: COPY_DEST -> GENERIC_READ
     barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
     barrier.Transition.StateAfter  = D3D12_RESOURCE_STATE_GENERIC_READ;
     cmdList->ResourceBarrier(1, &barrier);
