@@ -4,7 +4,7 @@
 //  Light.h
 // ═══════════════════════════════════════════════════════════════════
 
-#include "Core/MathHelper.h"
+#include "Core/D3DUtil.h"
 
 struct DirectionalLight
 {

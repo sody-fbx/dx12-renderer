@@ -43,8 +43,13 @@
     <ClCompile Include="src\Renderer.cpp" />
     <ClCompile Include="src\Resource\GeometryGenerator.cpp" />
     <ClCompile Include="src\Resource\Mesh.cpp" />
+    <ClCompile Include="src\Resource\MeshManager.cpp" />
+    <ClCompile Include="src\Resource\Texture.cpp" />
+    <ClCompile Include="src\Resource\TextureManager.cpp" />
     <ClCompile Include="src\Scene\Camera.cpp" />
+    <ClCompile Include="src\Scene\DemoScene.cpp" />
     <ClCompile Include="src\Scene\Scene.cpp" />
+    <ClCompile Include="src\Scene\SceneManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imgui\imconfig.h" />
@@ -63,7 +68,6 @@
     <ClInclude Include="include\Core\D3DDevice.h" />
     <ClInclude Include="include\Core\D3DUtil.h" />
     <ClInclude Include="include\Core\DescriptorHeap.h" />
-    <ClInclude Include="include\Core\MathHelper.h" />
     <ClInclude Include="include\Core\PipelineState.h" />
     <ClInclude Include="include\Core\RootSignature.h" />
     <ClInclude Include="include\Core\SwapChain.h" />
@@ -73,16 +77,24 @@
     <ClInclude Include="include\Pass\PassUtil.h" />
     <ClInclude Include="include\Pass\ShadowPass.h" />
     <ClInclude Include="include\Renderer.h" />
-    <ClInclude Include="include\Resource\FrameResource.h" />
+    <ClInclude Include="include\Pass\FrameResource.h" />
     <ClInclude Include="include\Resource\GeometryGenerator.h" />
     <ClInclude Include="include\Resource\Mesh.h" />
+    <ClInclude Include="include\Resource\MeshManager.h" />
+    <ClInclude Include="include\Resource\PrimitiveDesc.h" />
+    <ClInclude Include="include\Resource\RenderContext.h" />
+    <ClInclude Include="include\ThirdParty\stb_image.h" />
+    <ClInclude Include="include\Resource\Texture.h" />
+    <ClInclude Include="include\Resource\TextureManager.h" />
     <ClInclude Include="include\Resource\UploadBuffer.h" />
     <ClInclude Include="include\Resource\Vertex.h" />
     <ClInclude Include="include\Scene\Camera.h" />
+    <ClInclude Include="include\Scene\DemoScene.h" />
+    <ClInclude Include="include\Scene\SceneManager.h" />
     <ClInclude Include="include\Scene\Light.h" />
     <ClInclude Include="include\Scene\RenderItem.h" />
     <ClInclude Include="include\Scene\Scene.h" />
-    <ClInclude Include="include\Shaders\ShaderList.h" />
+    <ClInclude Include="include\Scene\SceneDesc.h" />
     <ClInclude Include="include\Shaders\ShaderUtil.h" />
   </ItemGroup>
   <ItemGroup>
@@ -94,6 +106,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VSMain</EntryPointName>
     </FxCompile>
+    <FxCompile Include="src\Shaders\PBR_Tex.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VSMain</EntryPointName>
+    </FxCompile>
     <FxCompile Include="src\Shaders\Shadow.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VSMain</EntryPointName>
@@ -101,6 +117,12 @@
     <FxCompile Include="src\Shaders\Triangle.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VSMain</EntryPointName>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="assets\brick.png" />
+    <Image Include="assets\stone.png" />
+    <Image Include="assets\tile.png" />
+    <Image Include="assets\wood.png" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
@@ -187,6 +209,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir)include;imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

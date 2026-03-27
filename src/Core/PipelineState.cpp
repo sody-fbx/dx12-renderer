@@ -186,3 +186,8 @@ void PipelineState::CreateShadow ( ID3D12Device* device
 
     ThrowIfFailed(device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&m_pso)));
 }
+
+ID3D12PipelineState* PipelineState::Get() const
+{
+    return m_pso.Get();
+}

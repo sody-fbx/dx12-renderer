@@ -4,8 +4,8 @@
 //  RenderItem.h
 // ═══════════════════════════════════════════════════════════════════
 
-#include "Core/MathHelper.h"
 #include "Resource/Mesh.h"
+#include "Resource/Texture.h"
 
 struct RenderItem
 {
@@ -13,6 +13,9 @@ struct RenderItem
 
     // 해당 오브젝트가 참조하는 Mesh
     Mesh* MeshRef = nullptr;
+
+    // 참조하는 Texture
+    Texture* TexRef = nullptr;
 
     // CB에서 해당 오브젝트의 인덱스
     UINT ObjCBIndex = 0;

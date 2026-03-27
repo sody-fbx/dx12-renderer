@@ -21,10 +21,9 @@ public:
 
     bool ProcessMessages();
 
-    // Getters
-    HWND  GetHWND()   const { return m_hwnd; }
-    int   GetWidth()  const { return m_width; }
-    int   GetHeight() const { return m_height; }
+    HWND  GetHWND()   const;
+    int   GetWidth()  const;
+    int   GetHeight() const;
 
     // 리사이즈 콜백
     std::function<void(int, int)> OnResize;

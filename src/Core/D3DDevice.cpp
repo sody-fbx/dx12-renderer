@@ -16,6 +16,16 @@ void D3DDevice::Initialize()
     CreateDevice();
 }
 
+ID3D12Device* D3DDevice::GetDevice()  const
+{
+    return m_device.Get();
+}
+
+IDXGIFactory4* D3DDevice::GetFactory() const
+{
+    return m_factory.Get();
+}
+
 void D3DDevice::EnableDebugLayer()
 {
 #if defined(_DEBUG)
@@ -41,9 +51,7 @@ void D3DDevice::CreateFactory()
     factoryFlags = DXGI_CREATE_FACTORY_DEBUG;
 #endif
 
-    ThrowIfFailed(
-        CreateDXGIFactory2(factoryFlags, IID_PPV_ARGS(&m_factory))
-    );
+    ThrowIfFailed(CreateDXGIFactory2(factoryFlags, IID_PPV_ARGS(&m_factory)));
 }
 
 void D3DDevice::SelectAdapter()
@@ -75,9 +83,7 @@ void D3DDevice::SelectAdapter()
     // 어댑터를 못 찾으면 WARP 폴백
     if (maxVRAM == 0)
     {
-        ThrowIfFailed(
-            m_factory->EnumWarpAdapter(IID_PPV_ARGS(&m_adapter))
-        );
+        ThrowIfFailed(m_factory->EnumWarpAdapter(IID_PPV_ARGS(&m_adapter)));
     }
 }
 
@@ -85,10 +91,9 @@ void D3DDevice::CreateDevice()
 {
     // Feature Level 12.0: DX12의 기본 기능 세트.
     ThrowIfFailed(
-        D3D12CreateDevice(
-            m_adapter.Get(),
-            D3D_FEATURE_LEVEL_12_0,
-            IID_PPV_ARGS(&m_device)
+        D3D12CreateDevice( m_adapter.Get()
+                         , D3D_FEATURE_LEVEL_12_0
+                         , IID_PPV_ARGS(&m_device)
         )
     );
 

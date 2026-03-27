@@ -8,6 +8,7 @@
 #include "Core/SwapChain.h"
 #include "Core/CommandQueue.h"
 #include "Core/CommandList.h"
+#include "Core/DescriptorHeap.h"
 
 #include "Pass/IRenderPass.h"
 #include "Pass/ForwardPass.h"
@@ -16,10 +17,11 @@
 
 #include "imgui_impl_win32.h"
 
-#include "Resource/Mesh.h"
-#include "Resource/FrameResource.h"
+#include "Pass/FrameResource.h"
+#include "Resource/MeshManager.h"
+#include "Resource/TextureManager.h"
 
-#include "Scene/Scene.h"
+#include "Scene/SceneManager.h"
 
 class Renderer
 {
@@ -35,16 +37,23 @@ private:
     void BeginFrame();
     void EndFrame();
 
+    void BuildRenderContext();
     void BuildPasses();
     void UpdateConstantBuffers();
     void DrawImGui();
 
 private:
-    // DX12 Core Module
+    // DX12 Core
     D3DDevice      m_device;
     SwapChain      m_swapChain;
     CommandQueue   m_commandQueue;
     CommandList    m_commandList;
+
+    // 공유 SRV Heap + Resource Manager
+    DescriptorHeap m_srvHeap;
+    MeshManager    m_meshManager;
+    TextureManager m_texManager;
+    RenderContext  m_renderCtx;
 
     // Pass
     std::vector<IRenderPass*>    m_passes;
@@ -53,18 +62,13 @@ private:
     std::unique_ptr<ImGuiPass>   m_imGuiPass;
 
     // Scene
-    Scene m_scene;
-
-    // Mesh
-    std::unordered_map<std::string, std::unique_ptr<Mesh>>   m_meshes;
+    SceneManager m_sceneManager;
 
     // FrameResource
-    std::array<FrameResource, FRAME_BUFFER_COUNT>   m_frameRes;
-
-    // 프레임 동기화
-    std::array<UINT64, FRAME_BUFFER_COUNT> m_frameFenceValues = {};
+    std::array<FrameResource, FRAME_BUFFER_COUNT> m_frameRes;
+    std::array<UINT64, FRAME_BUFFER_COUNT>        m_frameFenceValues = {};
 
     HWND m_hwnd;
-    int m_width  = 0;
-    int m_height = 0;
+    int  m_width  = 0;
+    int  m_height = 0;
 };

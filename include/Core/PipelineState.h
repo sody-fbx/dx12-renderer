@@ -29,7 +29,7 @@ public:
                       , const std::wstring& vsPath
                       , DXGI_FORMAT depthFormat );
 
-    ID3D12PipelineState* Get() const { return m_pso.Get(); }
+    ID3D12PipelineState* Get() const;
 
 private:
     ComPtr<ID3D12PipelineState> m_pso;

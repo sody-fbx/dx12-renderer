@@ -25,13 +25,22 @@ void DescriptorHeap::Initialize( ID3D12Device* device
     m_currentIndex = 0;
 }
 
-D3D12_CPU_DESCRIPTOR_HANDLE DescriptorHeap::Allocate()
+D3D12_CPU_DESCRIPTOR_HANDLE DescriptorHeap::AllocateHandle()
 {
     assert(m_currentIndex < m_numDescriptors && "Descriptor heap full!");
 
     D3D12_CPU_DESCRIPTOR_HANDLE handle = GetCPUHandle(m_currentIndex);
     m_currentIndex++;
     return handle;
+}
+
+UINT DescriptorHeap::AllocateIndex()
+{
+    assert(m_currentIndex < m_numDescriptors && "Descriptor heap full!");
+
+    D3D12_CPU_DESCRIPTOR_HANDLE handle = GetCPUHandle(m_currentIndex);
+    
+    return m_currentIndex++;
 }
 
 D3D12_CPU_DESCRIPTOR_HANDLE DescriptorHeap::GetCPUHandle(UINT index) const
@@ -46,4 +55,19 @@ D3D12_GPU_DESCRIPTOR_HANDLE DescriptorHeap::GetGPUHandle(UINT index) const
     D3D12_GPU_DESCRIPTOR_HANDLE handle = m_heap->GetGPUDescriptorHandleForHeapStart();
     handle.ptr += static_cast<UINT64>(index) * m_descriptorSize;
     return handle;
+}
+
+ID3D12DescriptorHeap* DescriptorHeap::Get() const
+{ 
+    return m_heap.Get(); 
+}
+
+UINT DescriptorHeap::GetDescriptorSize() const
+{ 
+    return m_descriptorSize;
+}
+
+UINT DescriptorHeap::GetAllocatedCount() const
+{ 
+    return m_currentIndex; 
 }

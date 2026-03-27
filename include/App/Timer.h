@@ -12,9 +12,9 @@ public:
     void  Initialize();
     void  Tick();              // 매 프레임 호출
 
-    float DeltaTime()   const { return m_deltaTime; }
-    float TotalTime()   const { return m_totalTime; }
-    int   FPS()         const { return m_fps; }
+    float DeltaTime()   const;
+    float TotalTime()   const;
+    int   FPS()         const;
 
 private:
     LARGE_INTEGER m_frequency   = {};

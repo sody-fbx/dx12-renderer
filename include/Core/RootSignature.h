@@ -9,8 +9,9 @@
 enum ROOT_SIGNATURE_TYPE
 {
     ROOT_SIGNATURE_TYPE_EMPTY       = 0,
-    ROOT_SIGNATURE_TYPE_CBV         = 1,
-    ROOT_SIGNATURE_TYPE_SHADOW      = 2,
+    ROOT_SIGNATURE_TYPE_CBV,
+    ROOT_SIGNATURE_TYPE_SHADOW,
+    ROOT_SIGNATURE_TYPE_TEXTURE,
 };
 
 class RootSignature
@@ -25,8 +26,11 @@ public:
     // Resource = CBV + Shadow Map SRV
     void CreateWithShadow(ID3D12Device* device);
 
+    // Resource = CBV + Shadow Map SRV + Albedo Texture SRV
+    void CreateWithTexture(ID3D12Device* device);
+
 public: // Getter
-    ID3D12RootSignature* Get() const { return m_rootSignature.Get(); }
+    ID3D12RootSignature* Get() const;
 
 private:
     ComPtr<ID3D12RootSignature> m_rootSignature;

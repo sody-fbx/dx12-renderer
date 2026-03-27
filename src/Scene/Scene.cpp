@@ -4,100 +4,68 @@
 
 #include "Scene/Scene.h"
 
-void Scene::Initialize(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList)
+void Scene::Generate(const SceneDesc& desc, const RenderContext& ctx, UINT cbOffset)
 {
-    BuildGeometry(device, cmdList);
-    BuildRenderItems();
+    m_renderItems.clear();
+    BuildRenderItems(desc.Items, ctx, cbOffset);
 }
 
-void Scene::BuildGeometry(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList)
+void Scene::BuildRenderItems( const std::vector<RenderItemDesc>& items
+                            , const RenderContext& ctx
+                            , UINT cbOffset )
 {
-    // Box
-    {
-        auto data = GeometryGenerator::CreateBox(1.0f, 1.0f, 1.0f);
-        auto mesh = std::make_unique<Mesh>();
-        mesh->Create( device, cmdList,
-                      data.Vertices.data(), (UINT)data.Vertices.size(), sizeof(VertexTex),
-                      data.Indices.data(), (UINT)data.Indices.size(), DXGI_FORMAT_R32_UINT
-        );
-        mesh->Name = "Box";
-        m_meshes["Box"] = std::move(mesh);
-    }
+    UINT cbIndex = cbOffset;
 
-    // Sphere
-    {
-        auto data = GeometryGenerator::CreateSphere(0.5f, 20, 20);
-        auto mesh = std::make_unique<Mesh>();
-        mesh->Create( device, cmdList,
-                      data.Vertices.data(), (UINT)data.Vertices.size(), sizeof(VertexTex),
-                      data.Indices.data(), (UINT)data.Indices.size(), DXGI_FORMAT_R32_UINT
-        );
-        mesh->Name = "Sphere";
-        m_meshes["Sphere"] = std::move(mesh);
-    }
-
-    // Cylinder
-    {
-        auto data = GeometryGenerator::CreateCylinder(0.4f, 0.4f, 1.5f, 20, 5);
-        auto mesh = std::make_unique<Mesh>();
-        mesh->Create( device, cmdList,
-                      data.Vertices.data(), (UINT)data.Vertices.size(), sizeof(VertexTex),
-                      data.Indices.data(), (UINT)data.Indices.size(), DXGI_FORMAT_R32_UINT
-        );
-        mesh->Name = "Cylinder";
-        m_meshes["Cylinder"] = std::move(mesh);
-    }
-
-    // Grid
-    {
-        auto data = GeometryGenerator::CreateGrid(10.0f, 10.0f, 20, 20);
-        auto mesh = std::make_unique<Mesh>();
-        mesh->Create( device, cmdList,
-                      data.Vertices.data(), (UINT)data.Vertices.size(), sizeof(VertexTex),
-                      data.Indices.data(), (UINT)data.Indices.size(), DXGI_FORMAT_R32_UINT
-        );
-        mesh->Name = "Grid";
-        m_meshes["Grid"] = std::move(mesh);
-    }
+    for (const auto& desc : items)
+        AddRenderItem(ctx, desc.MeshName, desc.TextureName, XMLoadFloat4x4(&desc.World), cbIndex);
 }
 
-void Scene::BuildRenderItems()
+void Scene::AddRenderItem( const RenderContext& rctx
+                         , const std::string& meshName
+                         , const std::string& texName
+                         , XMMATRIX world
+                         , UINT& cbIndex )
 {
-    UINT cbIndex = 0;
+    Mesh* mesh = rctx.Meshes->Get(meshName);
+    Texture* tex = rctx.Textures->Get(texName);
 
-    // Grid (바닥, y=0)
+    if (mesh == nullptr)
     {
-        auto item = std::make_unique<RenderItem>();
-        item->MeshRef = m_meshes["Grid"].get();
-        item->ObjCBIndex = cbIndex++;
-        // World = Identity (원점에 수평으로 깔림)
-        m_renderItems.push_back(std::move(item));
+        OutputDebugStringA("[Scene] Mesh not found, skipping RenderItem: ");
+        OutputDebugStringA(meshName.c_str());
+        OutputDebugStringA("\n");
+        return;
     }
 
-    // Box (원점 위, y=0.5)
-    {
-        auto item = std::make_unique<RenderItem>();
-        item->MeshRef = m_meshes["Box"].get();
-        item->ObjCBIndex = cbIndex++;
-        XMStoreFloat4x4(&item->World, XMMatrixTranslation(0.0f, 0.5f, 0.0f));
-        m_renderItems.push_back(std::move(item));
-    }
+    auto item        = std::make_unique<RenderItem>();
+    item->MeshRef    = mesh;
+    item->TexRef     = tex;
+    item->ObjCBIndex = cbIndex++;
+    XMStoreFloat4x4(&item->World, world);
+    m_renderItems.push_back(std::move(item));
+}
 
-    // Sphere (오른쪽, x=3)
-    {
-        auto item = std::make_unique<RenderItem>();
-        item->MeshRef = m_meshes["Sphere"].get();
-        item->ObjCBIndex = cbIndex++;
-        XMStoreFloat4x4(&item->World, XMMatrixTranslation(3.0f, 0.5f, 0.0f));
-        m_renderItems.push_back(std::move(item));
-    }
+void Scene::SetCamera(Camera cam)
+{
+    m_camera = cam;
+}
 
-    // Cylinder (왼쪽, x=-3)
-    {
-        auto item = std::make_unique<RenderItem>();
-        item->MeshRef = m_meshes["Cylinder"].get();
-        item->ObjCBIndex = cbIndex++;
-        XMStoreFloat4x4(&item->World, XMMatrixTranslation(-3.0f, 0.75f, 0.0f));
-        m_renderItems.push_back(std::move(item));
-    }
+Camera& Scene::GetCamera()
+{
+    return m_camera;
+}
+
+DirectionalLight& Scene::GetDirLight()
+{
+    return m_dirLight;
+}
+
+const std::vector<std::unique_ptr<RenderItem>>& Scene::GetRenderItems() const
+{
+    return m_renderItems;
+}
+
+UINT Scene::GetObjectCount() const
+{
+    return static_cast<UINT>(m_renderItems.size());
 }

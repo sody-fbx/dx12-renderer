@@ -30,3 +30,18 @@ void Timer::Tick()
         m_elapsed   -= 1.0f;
     }
 }
+
+float Timer::DeltaTime() const
+{
+    return m_deltaTime;
+}
+
+float Timer::TotalTime() const
+{
+    return m_totalTime;
+}
+
+int Timer::FPS()  const
+{
+    return m_fps;
+}

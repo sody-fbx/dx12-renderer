@@ -46,6 +46,12 @@
     <Filter Include="imgui">
       <UniqueIdentifier>{15c6b198-3d05-4b31-9d13-c63db14b65a9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="assets">
+      <UniqueIdentifier>{e984f5fe-f7f8-425c-9031-93dd68873880}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\ThirdParty">
+      <UniqueIdentifier>{e0bf863c-e6f6-4f84-947c-3600fc714f52}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\App\main.cpp">
@@ -126,6 +132,21 @@
     <ClCompile Include="imgui\imgui_demo.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
+    <ClCompile Include="src\Resource\Texture.cpp">
+      <Filter>src\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Resource\TextureManager.cpp">
+      <Filter>src\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Resource\MeshManager.cpp">
+      <Filter>src\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene\DemoScene.cpp">
+      <Filter>src\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene\SceneManager.cpp">
+      <Filter>src\Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Core\D3DUtil.h">
@@ -155,14 +176,8 @@
     <ClInclude Include="include\App\Timer.h">
       <Filter>include\App</Filter>
     </ClInclude>
-    <ClInclude Include="include\Resource\FrameResource.h">
-      <Filter>include\Resource</Filter>
-    </ClInclude>
     <ClInclude Include="include\Resource\UploadBuffer.h">
       <Filter>include\Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Core\MathHelper.h">
-      <Filter>include\Core</Filter>
     </ClInclude>
     <ClInclude Include="include\Resource\GeometryGenerator.h">
       <Filter>include\Resource</Filter>
@@ -181,9 +196,6 @@
     </ClInclude>
     <ClInclude Include="include\Scene\RenderItem.h">
       <Filter>include\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Shaders\ShaderList.h">
-      <Filter>include\Shaders</Filter>
     </ClInclude>
     <ClInclude Include="include\Pass\ForwardPass.h">
       <Filter>include\Pass</Filter>
@@ -239,6 +251,36 @@
     <ClInclude Include="include\Pass\ImGuiPass.h">
       <Filter>include\Pass</Filter>
     </ClInclude>
+    <ClInclude Include="include\Resource\Texture.h">
+      <Filter>include\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Resource\TextureManager.h">
+      <Filter>include\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Resource\RenderContext.h">
+      <Filter>include\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Resource\MeshManager.h">
+      <Filter>include\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Scene\SceneDesc.h">
+      <Filter>include\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Scene\DemoScene.h">
+      <Filter>include\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Resource\PrimitiveDesc.h">
+      <Filter>include\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Pass\FrameResource.h">
+      <Filter>include\Pass</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Scene\SceneManager.h">
+      <Filter>include\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ThirdParty\stb_image.h">
+      <Filter>include\ThirdParty</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="src\Shaders\Triangle.hlsl">
@@ -253,5 +295,22 @@
     <FxCompile Include="src\Shaders\Shadow.hlsl">
       <Filter>src\Shaders</Filter>
     </FxCompile>
+    <FxCompile Include="src\Shaders\PBR_Tex.hlsl">
+      <Filter>src\Shaders</Filter>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="assets\brick.png">
+      <Filter>assets</Filter>
+    </Image>
+    <Image Include="assets\stone.png">
+      <Filter>assets</Filter>
+    </Image>
+    <Image Include="assets\tile.png">
+      <Filter>assets</Filter>
+    </Image>
+    <Image Include="assets\wood.png">
+      <Filter>assets</Filter>
+    </Image>
   </ItemGroup>
 </Project>

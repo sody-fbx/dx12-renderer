@@ -69,3 +69,8 @@ void CommandQueue::Flush()
     UINT64 fenceValue = Signal();
     WaitForFenceValue(fenceValue);
 }
+
+ID3D12CommandQueue* CommandQueue::GetQueue() const
+{ 
+    return m_queue.Get(); 
+}

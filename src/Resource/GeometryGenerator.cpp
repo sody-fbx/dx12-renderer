@@ -3,7 +3,6 @@
 // ═══════════════════════════════════════════════════════════════════
 
 #include "Resource/GeometryGenerator.h"
-#include "Core/MathHelper.h"
 
 namespace GeometryGenerator
 {

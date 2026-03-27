@@ -15,14 +15,13 @@ public:
     void OnMouseMove(WPARAM btnState, int x, int y);
     void OnMouseWheel(short delta);
 
-    float GetDeltaX()     const { return m_deltaX; }
-    float GetDeltaY()     const { return m_deltaY; }
-    float GetWheelDelta() const { return m_wheelDelta; }
+    float GetDeltaX()       const;
+    float GetDeltaY()       const;
+    float GetWheelDelta()   const;
+    bool  IsLeftButtonDown() const;
 
     // 델타값 리셋
     void ResetFrameInput();
-
-    bool IsLeftButtonDown() const { return m_leftDown; }
 
 private:
     int   m_lastX      = 0;

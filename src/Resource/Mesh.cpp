@@ -26,23 +26,17 @@ static ComPtr<ID3D12Resource> CreateDefaultBuffer( ID3D12Device* device
     bufferDesc.SampleDesc       = { 1, 0 };
     bufferDesc.Layout           = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 
-    ThrowIfFailed(device->CreateCommittedResource( &defaultHeap
-                                                 , D3D12_HEAP_FLAG_NONE
-                                                 , &bufferDesc
-                                                 , D3D12_RESOURCE_STATE_COMMON
-                                                 , nullptr
-                                                 , IID_PPV_ARGS(&defaultBuffer) ));
+    ThrowIfFailed(device->CreateCommittedResource( &defaultHeap, D3D12_HEAP_FLAG_NONE
+                                                 , &bufferDesc, D3D12_RESOURCE_STATE_COMMON
+                                                 , nullptr, IID_PPV_ARGS(&defaultBuffer) ));
 
     // 2. Upload Heap 임시 버퍼 생성
     D3D12_HEAP_PROPERTIES uploadHeap = {};
     uploadHeap.Type = D3D12_HEAP_TYPE_UPLOAD;
 
-    ThrowIfFailed(device->CreateCommittedResource( &uploadHeap
-                                                 , D3D12_HEAP_FLAG_NONE
-                                                 , &bufferDesc
-                                                 , D3D12_RESOURCE_STATE_GENERIC_READ
-                                                 , nullptr
-                                                 , IID_PPV_ARGS(&uploadBuffer) ));
+    ThrowIfFailed(device->CreateCommittedResource( &uploadHeap, D3D12_HEAP_FLAG_NONE
+                                                 , &bufferDesc, D3D12_RESOURCE_STATE_GENERIC_READ
+                                                 , nullptr, IID_PPV_ARGS(&uploadBuffer) ));
 
     // 3. CPU에서 Upload Heap에 데이터 복사
     void* mappedData = nullptr;
@@ -79,17 +73,29 @@ void Mesh::Create( ID3D12Device* device
     m_vertexCount  = vertexCount;
     m_vertexStride = vertexStride;
     m_indexCount   = indexCount;
-    m_indexFormat   = indexFormat;
+    m_indexFormat  = indexFormat;
 
     UINT vbByteSize = vertexCount * vertexStride;
     UINT ibByteSize = indexCount * (indexFormat == DXGI_FORMAT_R16_UINT ? 2 : 4);
 
     // Upload -> Default 복사 (GPU 명령으로 기록)
-    m_vertexBufferGPU = CreateDefaultBuffer(
-        device, cmdList, vertexData, vbByteSize, m_vertexBufferUpload);
+    m_vertexBufferGPU = CreateDefaultBuffer( device
+                                           , cmdList
+                                           , vertexData
+                                           , vbByteSize
+                                           , m_vertexBufferUpload);
 
-    m_indexBufferGPU = CreateDefaultBuffer(
-        device, cmdList, indexData, ibByteSize, m_indexBufferUpload);
+    m_indexBufferGPU = CreateDefaultBuffer( device
+                                          , cmdList
+                                          , indexData
+                                          , ibByteSize
+                                          , m_indexBufferUpload);
+}
+
+void Mesh::ReleaseUploadBuffer()
+{
+    m_vertexBufferUpload.Reset();
+    m_indexBufferUpload.Reset();
 }
 
 D3D12_VERTEX_BUFFER_VIEW Mesh::VertexBufferView() const
@@ -108,4 +114,19 @@ D3D12_INDEX_BUFFER_VIEW Mesh::IndexBufferView() const
     view.SizeInBytes    = m_indexCount * (m_indexFormat == DXGI_FORMAT_R16_UINT ? 2 : 4);
     view.Format         = m_indexFormat;
     return view;
+}
+
+UINT Mesh::GetIndexCount() const
+{
+    return m_indexCount;
+}
+
+const std::string& Mesh::GetName() const
+{
+    return m_name;
+}
+
+void Mesh::SetName(const std::string& name)
+{
+    m_name = name;
 }

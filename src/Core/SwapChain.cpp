@@ -47,7 +47,7 @@ void SwapChain::CreateRTV(ID3D12Device* device)
         ThrowIfFailed(m_swapChain->GetBuffer(i, IID_PPV_ARGS(&m_backBuffers[i])));
         device->CreateRenderTargetView( m_backBuffers[i].Get()
                                       , nullptr
-                                      , m_rtvHeap.Allocate());
+                                      , m_rtvHeap.AllocateHandle());
     }
 }
 

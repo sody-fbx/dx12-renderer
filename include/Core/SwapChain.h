@@ -18,9 +18,11 @@ public:
                    , int height );
 
     void Present(bool vsync);
+
     void Resize(ID3D12Device* device, int width, int height);
 
     UINT CurrentBackBufferIndex() const;
+
     ID3D12Resource* CurrentBackBuffer() const;
 
     D3D12_CPU_DESCRIPTOR_HANDLE CurrentRTV() const;

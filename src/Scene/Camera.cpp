@@ -8,7 +8,7 @@ void Camera::Initialize( float distance, float fovDegrees, float aspectRatio,
                          float nearZ, float farZ)
 {
     m_radius = distance;
-    m_fovY   = MathHelper::DegreesToRadians(fovDegrees);
+    m_fovY   = XMConvertToRadians(fovDegrees);
     m_aspect = aspectRatio;
     m_nearZ  = nearZ;
     m_farZ   = farZ;

@@ -53,7 +53,7 @@ void ImGuiPass::InitBackend( ID3D12Device* device
                                       , D3D12_CPU_DESCRIPTOR_HANDLE* out_cpu
                                       , D3D12_GPU_DESCRIPTOR_HANDLE* out_gpu)
         {
-            *out_cpu = g_imguiSrvHeap->Allocate();
+            *out_cpu = g_imguiSrvHeap->AllocateHandle();
             *out_gpu = g_imguiSrvHeap->GetGPUHandle(0);
         };
 

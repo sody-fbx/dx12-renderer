@@ -14,15 +14,17 @@ public:
                    , UINT numDescriptors
                    , bool shaderVisible );
 
-    // 다음 빈 슬롯에 Descriptor를 할당하고 CPU 핸들 반환
-    D3D12_CPU_DESCRIPTOR_HANDLE Allocate();
+    // 다음 빈 슬롯에 Descriptor를 할당
+    D3D12_CPU_DESCRIPTOR_HANDLE AllocateHandle();
+    UINT AllocateIndex();
 
     // 특정 인덱스의 CPU/GPU 핸들
     D3D12_CPU_DESCRIPTOR_HANDLE GetCPUHandle(UINT index) const;
     D3D12_GPU_DESCRIPTOR_HANDLE GetGPUHandle(UINT index) const;
 
-    ID3D12DescriptorHeap* Get() const { return m_heap.Get(); }
-    UINT GetDescriptorSize()    const { return m_descriptorSize; }
+    ID3D12DescriptorHeap* Get() const;
+    UINT GetDescriptorSize() const;
+    UINT GetAllocatedCount() const;
 
 private:
     ComPtr<ID3D12DescriptorHeap> m_heap;

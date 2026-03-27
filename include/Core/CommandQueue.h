@@ -25,7 +25,7 @@ public:
     void Flush();
 
 public: // Getter
-    ID3D12CommandQueue* GetQueue() const { return m_queue.Get(); }
+    ID3D12CommandQueue* GetQueue() const;
 
 private:
     ComPtr<ID3D12CommandQueue> m_queue;

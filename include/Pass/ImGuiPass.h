@@ -10,7 +10,7 @@
 class ImGuiPass : public IRenderPass
 {
 public:
-    void Setup(ID3D12Device* device, int width, int height) override;
+    void Setup(ID3D12Device* device, int width, int height);
     void Execute(const FrameContext& ctx) override;
     void OnResize(ID3D12Device* device, int width, int height) override;
     void Shutdown();

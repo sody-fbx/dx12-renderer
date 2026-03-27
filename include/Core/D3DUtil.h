@@ -31,8 +31,9 @@
 #include <cassert>
 #include <unordered_map>
 
-// ─── ComPtr ───
+// ─── ComPtr / DirectXMath ───
 using Microsoft::WRL::ComPtr;
+using namespace DirectX;
 
 // ─── HRESULT 체크 매크로 ───
 // DX12의 거의 모든 함수가 HRESULT를 반환함, 실패 시 바로 예외 처리.
@@ -48,6 +49,20 @@ using Microsoft::WRL::ComPtr;
         }                                                           \
     } while(0)
 #endif
+
+// ─── 문자열 ───
+inline std::string WstrToStr(const std::wstring& wstr)
+{
+    if (wstr.empty()) return {};
+    int size = WideCharToMultiByte(CP_UTF8, 0,
+                                   wstr.c_str(), -1,
+                                   nullptr, 0, nullptr, nullptr);
+    std::string result(size, 0);
+    WideCharToMultiByte(CP_UTF8, 0,
+                        wstr.c_str(), -1,
+                        result.data(), size, nullptr, nullptr);
+    return result;
+}
 
 // ─── 프레임 리소스 상수 ───
 // 트리플 버퍼링 : GPU가 프레임 N을 렌더링하는 동안 CPU는 프레임 N+1, N+2를 준비할 수 있음.

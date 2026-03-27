@@ -3,11 +3,12 @@
 // ═══════════════════════════════════════════════════════════════════
 
 #include "Pass/ShadowPass.h"
+#include "imgui.h"
 
-void ShadowPass::Setup(ID3D12Device* device, int width, int height)
+void ShadowPass::Setup(ID3D12Device* device, int width, int height, DescriptorHeap& srvAllocator)
 {
     m_pipelineSet.Create(device, ROOT_SIGNATURE_TYPE_CBV, SHADERTYPE::SHADOW);
-    CreateShadowMap(device);
+    CreateShadowMap(device, srvAllocator);
 }
 
 void ShadowPass::Execute(const FrameContext& ctx)
@@ -44,16 +45,16 @@ void ShadowPass::Execute(const FrameContext& ctx)
     cmdList->SetPipelineState(m_pipelineSet.Pso.Get());
     cmdList->SetGraphicsRootSignature(m_pipelineSet.RootSignature.Get());
 
-    // PassCB 바인딩
-    cmdList->SetGraphicsRootConstantBufferView(1, curFrame->SPCB->GetElementGPUAddress(0));
+    // ShadowCB 바인딩
+    cmdList->SetGraphicsRootConstantBufferView(1, curFrame->ShadowCB->GetElementGPUAddress(0));
 
     // RenderItem(Mesh) for light Draw
     for (auto& item : *ctx.RenderItems)
     {
-        auto vbv = item->MeshRef->VertexBufferView();
-        auto ibv = item->MeshRef->IndexBufferView();
-        cmdList->IASetVertexBuffers(0, 1, &vbv);
-        cmdList->IASetIndexBuffer(&ibv);
+        auto vertexView = item->MeshRef->VertexBufferView();
+        auto indexView  = item->MeshRef->IndexBufferView();
+        cmdList->IASetVertexBuffers(0, 1, &vertexView);
+        cmdList->IASetIndexBuffer(&indexView);
         cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
         cmdList->SetGraphicsRootConstantBufferView(0, curFrame->ObjectCB->GetElementGPUAddress(item->ObjCBIndex));
@@ -67,34 +68,40 @@ void ShadowPass::Execute(const FrameContext& ctx)
     cmdList->ResourceBarrier(1, &barrier);
 }
 
-void ShadowPass::CreateShadowMap(ID3D12Device* device)
+void ShadowPass::OnDrawDebugUI()
+{
+    if (ImGui::CollapsingHeader("Shadow Pass"))
+    {
+        ImGui::Text("Shadow Map: %dx%d", m_shadowMap.Size, m_shadowMap.Size);
+        ImGui::Text("SRV Index : %u",    m_shadowMap.SRVIndex);
+    }
+}
+
+void ShadowPass::CreateShadowMap(ID3D12Device* device, DescriptorHeap& allocator)
 {
 	// Depth/Stencil Buffer
 	// Shadow Map 텍스처는 Typeless(DSV는 D32, SRV는 R32로 해석)
-	D3D12_RESOURCE_DESC texDesc = {};
-	texDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
-	texDesc.Width = m_shadowMap.Size;
-	texDesc.Height = m_shadowMap.Size;
-	texDesc.DepthOrArraySize = 1;
-	texDesc.MipLevels = 1;
-	texDesc.Format = DXGI_FORMAT_R32_TYPELESS;
-	texDesc.SampleDesc = { 1, 0 };
-	texDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
+	D3D12_RESOURCE_DESC texDesc     = {};
+	texDesc.Dimension               = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+	texDesc.Width                   = m_shadowMap.Size;
+	texDesc.Height                  = m_shadowMap.Size;
+	texDesc.DepthOrArraySize        = 1;
+	texDesc.MipLevels               = 1;
+	texDesc.Format                  = DXGI_FORMAT_R32_TYPELESS;
+	texDesc.SampleDesc              = { 1, 0 };
+	texDesc.Flags                   = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
 
-	D3D12_CLEAR_VALUE clearValue = {};
-	clearValue.Format = DXGI_FORMAT_D32_FLOAT;
-	clearValue.DepthStencil.Depth = 1.0f;
+	D3D12_CLEAR_VALUE clearValue    = {};
+	clearValue.Format               = DXGI_FORMAT_D32_FLOAT;
+	clearValue.DepthStencil.Depth   = 1.0f;
 	clearValue.DepthStencil.Stencil = 0;
 
 	D3D12_HEAP_PROPERTIES heapProps = {};
 	heapProps.Type = D3D12_HEAP_TYPE_DEFAULT;
 
-	ThrowIfFailed(device->CreateCommittedResource( &heapProps
-		                                         , D3D12_HEAP_FLAG_NONE
-		                                         , &texDesc
-		                                         , D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
-		                                         , &clearValue
-		                                         , IID_PPV_ARGS(&m_shadowMap.Texture)));
+	ThrowIfFailed(device->CreateCommittedResource( &heapProps, D3D12_HEAP_FLAG_NONE
+		                                         , &texDesc, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
+		                                         , &clearValue, IID_PPV_ARGS(&m_shadowMap.Texture)));
 
 	// DSV (Depth 쓰기 전용)
     m_shadowMap.Depth.Heap.Initialize(device, D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1, false);
@@ -104,10 +111,10 @@ void ShadowPass::CreateShadowMap(ID3D12Device* device)
 	dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
 	device->CreateDepthStencilView( m_shadowMap.Texture.Get()
 		                          , &dsvDesc
-		                          , m_shadowMap.Depth.Heap.Allocate());
+		                          , m_shadowMap.Depth.Heap.AllocateHandle());
 
 	// SRV (ForwardPass에서 읽기용)
-    m_shadowMap.SrvHeap.Initialize(device, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 1, true);
+    m_shadowMap.SRVIndex = allocator.AllocateIndex();
 
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 	srvDesc.Format = DXGI_FORMAT_R32_FLOAT;
@@ -116,5 +123,10 @@ void ShadowPass::CreateShadowMap(ID3D12Device* device)
 	srvDesc.Texture2D.MipLevels = 1;
 	device->CreateShaderResourceView( m_shadowMap.Texture.Get()
                                     , &srvDesc
-                                    , m_shadowMap.SrvHeap.Allocate());
+                                    , allocator.GetCPUHandle(m_shadowMap.SRVIndex));
+}
+
+const ShadowMap& ShadowPass::GetShadowMap() const
+{
+    return m_shadowMap;
 }

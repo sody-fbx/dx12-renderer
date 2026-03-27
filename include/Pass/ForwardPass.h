@@ -6,14 +6,15 @@
 
 #include "Pass/PassUtil.h"
 
+#include "Resource/RenderContext.h"
+
 class ForwardPass : public IRenderPass
 {
 public:
-    void Setup(ID3D12Device* device, int width, int height) override;
+    void Setup(ID3D12Device* device, int width, int height,
+               const ShadowMap* shadowMap, const RenderContext* renderCtx);
     void Execute(const FrameContext& ctx) override;
     void OnResize(ID3D12Device* device, int width, int height) override;
-
-    void SetShadowMap(const ShadowMap* shadowMap) { m_shadowMap = shadowMap; }
 
 private:
     void CreateDepthTarget(ID3D12Device* device, int width, int height);
@@ -26,6 +27,7 @@ private:
     // Object에서 골라서 사용할 수 있도록 변경 예정
     PipelineSet m_pipelineSet;
 
-    // ShadowMap
+    // Link Data
     const ShadowMap* m_shadowMap = nullptr;
+    const RenderContext* m_renderCtx = nullptr;
 };

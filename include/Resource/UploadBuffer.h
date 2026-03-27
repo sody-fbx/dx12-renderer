@@ -33,14 +33,9 @@ public:
         bufferDesc.SampleDesc       = { 1, 0 };
         bufferDesc.Layout           = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 
-        ThrowIfFailed(device->CreateCommittedResource(
-            &heapProps,
-            D3D12_HEAP_FLAG_NONE,
-            &bufferDesc,
-            D3D12_RESOURCE_STATE_GENERIC_READ,
-            nullptr,
-            IID_PPV_ARGS(&m_buffer)
-        ));
+        ThrowIfFailed(device->CreateCommittedResource( &heapProps, D3D12_HEAP_FLAG_NONE
+                                                     , &bufferDesc, D3D12_RESOURCE_STATE_GENERIC_READ
+                                                     , nullptr, IID_PPV_ARGS(&m_buffer) ));
 
         // 생성 시 Map, 소멸 시 Unmap — 수명 내내 매핑 유지
         ThrowIfFailed(m_buffer->Map(0, nullptr, reinterpret_cast<void**>(&m_mappedData)));

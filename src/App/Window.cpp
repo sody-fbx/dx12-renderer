@@ -7,21 +7,22 @@
 // WndProc에서 Window 인스턴스에 접근하기 위한 글로벌 포인터.
 static Window* g_window = nullptr;
 
-void Window::Initialize(HINSTANCE hInstance, int width, int height,
-                         const std::wstring& title)
+void Window::Initialize( HINSTANCE hInstance
+                       , int width, int height
+                       , const std::wstring& title)
 {
     g_window = this;
     m_width  = width;
     m_height = height;
 
     // 윈도우 클래스 등록
-    WNDCLASSEX wc = {};
-    wc.cbSize        = sizeof(WNDCLASSEX);
-    wc.style         = CS_HREDRAW | CS_VREDRAW;
-    wc.lpfnWndProc   = WndProc;
-    wc.hInstance     = hInstance;
-    wc.hCursor       = LoadCursor(nullptr, IDC_ARROW);
-    wc.lpszClassName = L"DX12RendererClass";
+    WNDCLASSEX wc       = {};
+    wc.cbSize           = sizeof(WNDCLASSEX);
+    wc.style            = CS_HREDRAW | CS_VREDRAW;
+    wc.lpfnWndProc      = WndProc;
+    wc.hInstance        = hInstance;
+    wc.hCursor          = LoadCursor(nullptr, IDC_ARROW);
+    wc.lpszClassName    = L"DX12RendererClass";
     RegisterClassEx(&wc);
 
     // 클라이언트 영역 크기 보정
@@ -31,16 +32,14 @@ void Window::Initialize(HINSTANCE hInstance, int width, int height,
     AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, FALSE);
 
     // 윈도우 생성
-    m_hwnd = CreateWindowEx(
-        0,
-        L"DX12RendererClass",
-        title.c_str(),
-        WS_OVERLAPPEDWINDOW,
-        CW_USEDEFAULT, CW_USEDEFAULT,
-        rect.right - rect.left,
-        rect.bottom - rect.top,
-        nullptr, nullptr, hInstance, nullptr
-    );
+    m_hwnd = CreateWindowEx( 0
+                           , L"DX12RendererClass"
+                           , title.c_str()
+                           , WS_OVERLAPPEDWINDOW
+                           , CW_USEDEFAULT, CW_USEDEFAULT
+                           , rect.right - rect.left
+                           , rect.bottom - rect.top
+                           , nullptr, nullptr, hInstance, nullptr);
 
     if (!m_hwnd)
         throw std::runtime_error("Failed to create window");
@@ -119,4 +118,19 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
     }
 
     return DefWindowProc(hwnd, msg, wParam, lParam);
+}
+
+HWND Window::GetHWND() const
+{
+    return m_hwnd;
+}
+
+int Window::GetWidth() const
+{
+    return m_width;
+}
+
+int Window::GetHeight() const
+{ 
+    return m_height;
 }

@@ -5,7 +5,46 @@
 // ═══════════════════════════════════════════════════════════════════
 
 #include "Core/D3DUtil.h"
-#include "Shaders/ShaderList.h"
+
+// X(ShaderName, FilePath)
+#define SHADER_LIST \
+    X(DEFAULT,    L"src/Shaders/Default.hlsl")           \
+    X(TRIANGLE,   L"src/Shaders/Triangle.hlsl")          \
+    X(LIGHT_BLPH, L"src/Shaders/Light_BlinnPhong.hlsl")  \
+    X(SHADOW,     L"src/Shaders/Shadow.hlsl")            \
+    X(PBR_TEX,    L"src/Shaders/PBR_Tex.hlsl")          \
+
+enum class SHADERTYPE : int
+{
+#define X(name, path) name,
+    SHADER_LIST
+#undef X
+    COUNT
+};
+
+constexpr const wchar_t* ShaderPaths[] =
+{
+#define X(name, path) path,
+    SHADER_LIST
+#undef X
+};
+
+constexpr const char* ShaderNames[] =
+{
+#define X(name, path) #name,
+    SHADER_LIST
+#undef X
+};
+
+inline constexpr const wchar_t* GetShaderPath(SHADERTYPE type)
+{
+    return ShaderPaths[static_cast<int>(type)];
+}
+
+inline constexpr const char* GetShaderName(SHADERTYPE type)
+{
+    return ShaderNames[static_cast<int>(type)];
+}
 
 namespace Shader
 {

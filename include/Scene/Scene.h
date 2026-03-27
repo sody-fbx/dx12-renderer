@@ -1,47 +1,55 @@
 ﻿#pragma once
 
 // ═══════════════════════════════════════════════════════════════════
-//  Scene.h
+//  Scene.h — 추상 베이스 클래스
 // ═══════════════════════════════════════════════════════════════════
 
 #include "Core/D3DUtil.h"
+
 #include "Scene/Camera.h"
 #include "Scene/RenderItem.h"
 #include "Scene/Light.h"
+#include "Scene/SceneDesc.h"
 
-#include "Resource/GeometryGenerator.h"
+#include "Resource/RenderContext.h"
 
 class Scene
 {
 public:
-    void Initialize (ID3D12Device* device, ID3D12GraphicsCommandList* cmdList);
+    virtual ~Scene() = default;
 
-    void SetCamera(Camera cam) { m_camera = cam; }
+    // 각 Scene이 필요한 에셋 목록 반환
+    virtual SceneDesc CreateSceneDesc() const = 0;
+
+    // SceneDesc 기반 RenderItem 생성
+    // cbOffset: SceneManager가 배분한 ObjectCB 시작 슬롯
+    void Generate(const SceneDesc& desc, const RenderContext& ctx, UINT cbOffset = 0);
+
+    // 해당 Scene 활성화
+    virtual void OnActivate(float aspectRatio) {}
+
+    void SetCamera(Camera cam);
 
 public: // Getter
-    // Camera
-    Camera& GetCamera() { return m_camera; }
+    Camera&           GetCamera();
+    DirectionalLight& GetDirLight();
 
-    // RenderItems
-    const std::vector<std::unique_ptr<RenderItem>>& GetRenderItems() const { return m_renderItems; }
-    UINT GetObjectCount() const { return (UINT)m_renderItems.size(); }
+    const std::vector<std::unique_ptr<RenderItem>>& GetRenderItems() const;
+    UINT GetObjectCount() const;
 
-    // Light
-    DirectionalLight& GetDirLight() { return m_dirLight; }
+protected:
+    Camera           m_camera;
+    DirectionalLight m_dirLight;
 
 private:
-    void BuildGeometry(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList);
-    void BuildRenderItems();
+    void BuildRenderItems( const std::vector<RenderItemDesc>& items
+                         , const RenderContext& ctx
+                         , UINT cbOffset );
+    void AddRenderItem( const RenderContext& ctx
+                      , const std::string& meshName
+                      , const std::string& texName
+                      , XMMATRIX world
+                      , UINT& cbIndex );
 
-    // Meshes
-    std::unordered_map<std::string, std::unique_ptr<Mesh>> m_meshes;
-
-    // RenderItems
     std::vector<std::unique_ptr<RenderItem>> m_renderItems;
-
-    // TODO : 추후 Map으로 변경하여 여러대의 카메라를 사용가능하도록 변경
-    Camera m_camera;
-
-    // Light
-    DirectionalLight m_dirLight;
 };

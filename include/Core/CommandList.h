@@ -15,13 +15,11 @@ public:
 
     void Close();
 
-    ID3D12GraphicsCommandList* Get() const { return m_cmdList.Get(); }
+public: // Getter
+    ID3D12GraphicsCommandList* Get() const;
 
-    // 프레임별 Allocator 접근 (Fence 체크 후 리셋에 필요)
-    ID3D12CommandAllocator* GetAllocator(UINT frameIndex) const
-    {
-        return m_allocators[frameIndex].Get();
-    }
+    // 프레임별 Allocator 접근
+    ID3D12CommandAllocator* GetAllocator(UINT frameIndex) const;
 
 private:
     std::array<ComPtr<ID3D12CommandAllocator>, FRAME_BUFFER_COUNT> m_allocators;

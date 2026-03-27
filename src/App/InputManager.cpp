@@ -41,3 +41,23 @@ void InputManager::ResetFrameInput()
     m_deltaY     = 0.0f;
     m_wheelDelta = 0.0f;
 }
+
+float InputManager::GetDeltaX() const
+{
+    return m_deltaX;
+}
+
+float InputManager::GetDeltaY() const
+{
+    return m_deltaY;
+}
+
+float InputManager::GetWheelDelta() const
+{ 
+    return m_wheelDelta;
+}
+
+bool  InputManager::IsLeftButtonDown() const
+{
+    return m_leftDown;
+}
