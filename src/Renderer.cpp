@@ -73,17 +73,31 @@ void Renderer::BuildPasses()
     m_shadowPass = std::make_unique<ShadowPass>();
     m_shadowPass->Setup(m_device.GetDevice(), m_width, m_height, m_srvHeap);
 
+    // Forward 패스 — ForwardPass 모드에서 사용
     m_forwardPass = std::make_unique<ForwardPass>();
     m_forwardPass->Setup(m_device.GetDevice(), m_width, m_height,
                          &m_shadowPass->GetShadowMap(), &m_renderCtx);
+
+    // Deferred 패스 — Deferred 모드에서 사용
+    m_geometryPass = std::make_unique<GeometryPass>();
+    m_geometryPass->Setup(m_device.GetDevice(), m_width, m_height, m_srvHeap, &m_renderCtx);
+
+    m_lightingPass = std::make_unique<LightingPass>();
+    m_lightingPass->Setup(m_device.GetDevice(),
+                          &m_shadowPass->GetShadowMap(),
+                          &m_geometryPass->GetGBuffer(),
+                          &m_renderCtx);
 
     m_imGuiPass = std::make_unique<ImGuiPass>();
     m_imGuiPass->Setup(m_device.GetDevice(), m_width, m_height);
     m_imGuiPass->InitBackend(m_device.GetDevice(), m_commandQueue.GetQueue(), m_hwnd);
 
+    // m_passes = 모든 패스 등록 — OnResize 시 한꺼번에 처리
     m_passes.clear();
     m_passes.push_back(m_shadowPass.get());
     m_passes.push_back(m_forwardPass.get());
+    m_passes.push_back(m_geometryPass.get());
+    m_passes.push_back(m_lightingPass.get());
     m_passes.push_back(m_imGuiPass.get());
 }
 
@@ -140,8 +154,21 @@ void Renderer::Render()
     ctx.CurrentFrameResource = &m_frameRes[frameIndex];
     ctx.RenderItems         = &m_sceneManager.GetActiveScene()->GetRenderItems();
 
-    for (auto* pass : m_passes)
-        pass->Execute(ctx);
+    // ShadowPass는 항상 실행
+    m_shadowPass->Execute(ctx);
+
+    // 렌더링 모드에 따라 분기
+    if (m_useDeferredRendering)
+    {
+        m_geometryPass->Execute(ctx);
+        m_lightingPass->Execute(ctx);
+    }
+    else
+    {
+        m_forwardPass->Execute(ctx);
+    }
+
+    m_imGuiPass->Execute(ctx);
 
     EndFrame();
 }
@@ -196,8 +223,18 @@ void Renderer::DrawImGui()
     ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
     ImGui::Separator();
 
+    // 렌더링 모드 선택
+    ImGui::Text("Rendering Mode");
+    if (ImGui::RadioButton("Forward",  !m_useDeferredRendering))
+        m_useDeferredRendering = false;
+    ImGui::SameLine();
+    if (ImGui::RadioButton("Deferred",  m_useDeferredRendering))
+        m_useDeferredRendering = true;
+    ImGui::Separator();
+
     Scene* scene = m_sceneManager.GetActiveScene();
-	// Camera Info
+
+    // Camera Info
     XMFLOAT3 camPos = scene->GetCamera().GetPosition();
     ImGui::Text("Camera: (%.1f, %.1f, %.1f)", camPos.x, camPos.y, camPos.z);
     ImGui::Separator();
@@ -210,13 +247,22 @@ void Renderer::DrawImGui()
     ImGui::SliderFloat("Intensity", &light.Intensity, 0.0f, 5.0f);
     ImGui::Separator();
 
-	// Render Stats
+    // Render Stats
     ImGui::Text("Objects: %d", scene->GetObjectCount());
-    ImGui::Text("Passes : %d", (int)m_passes.size());
+    ImGui::Text("Passes : %d", m_useDeferredRendering ? 4 : 3);
     ImGui::Separator();
 
-    for (auto* pass : m_passes)
-        pass->OnDrawDebugUI();
+    // 활성 패스의 디버그 UI만 표시
+    m_shadowPass->OnDrawDebugUI();
+    if (m_useDeferredRendering)
+    {
+        m_geometryPass->OnDrawDebugUI();
+        m_lightingPass->OnDrawDebugUI();
+    }
+    else
+    {
+        m_forwardPass->OnDrawDebugUI();
+    }
 
     ImGui::End();
 }

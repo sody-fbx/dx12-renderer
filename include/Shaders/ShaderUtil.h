@@ -13,6 +13,8 @@
     X(LIGHT_BLPH, L"src/Shaders/Light_BlinnPhong.hlsl")  \
     X(SHADOW,     L"src/Shaders/Shadow.hlsl")            \
     X(PBR_TEX,    L"src/Shaders/PBR_Tex.hlsl")          \
+    X(GBUFFER,    L"src/Shaders/GBuffer.hlsl")           \
+    X(LIGHTING,   L"src/Shaders/Lighting.hlsl")          \
 
 enum class SHADERTYPE : int
 {

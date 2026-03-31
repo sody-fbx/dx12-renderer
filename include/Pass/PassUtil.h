@@ -100,3 +100,30 @@ struct ShadowMap
     ID3D12Resource*             Get()     const { return Texture.Get(); }
     bool                        IsValid() const { return Texture != nullptr; }
 };
+
+// ═══════════════════════════════════════════════════════════════════
+//  GBuffer — Deferred Rendering G-Buffer
+//  GeometryPass에서 생성, LightingPass에서 SRV로 읽음
+//  [0] Albedo   : R8G8B8A8_UNORM
+//  [1] Normal   : R16G16B16A16_FLOAT (World Space, [0,1] packed)
+//  [2] WorldPos : R16G16B16A16_FLOAT (World Space Position)
+// ═══════════════════════════════════════════════════════════════════
+struct GBuffer
+{
+    static constexpr UINT COUNT = 3;
+
+    static constexpr DXGI_FORMAT RTFormats[COUNT] = {
+        DXGI_FORMAT_R8G8B8A8_UNORM,       // [0] Albedo
+        DXGI_FORMAT_R16G16B16A16_FLOAT,   // [1] Normal
+        DXGI_FORMAT_R16G16B16A16_FLOAT,   // [2] World Position
+    };
+
+    ComPtr<ID3D12Resource> Textures[COUNT];
+    DescriptorHeap         RtvHeap;
+
+    // 공유 SRV Heap 슬롯 인덱스 — Setup()에서 연속 할당, Resize 시 재사용
+    UINT SRVIndices[COUNT] = { UINT_MAX, UINT_MAX, UINT_MAX };
+
+    D3D12_CPU_DESCRIPTOR_HANDLE RTV(UINT i) const { return RtvHeap.GetCPUHandle(i); }
+    bool                        IsValid()   const { return Textures[0] != nullptr; }
+};

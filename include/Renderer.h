@@ -11,8 +11,10 @@
 #include "Core/DescriptorHeap.h"
 
 #include "Pass/IRenderPass.h"
-#include "Pass/ForwardPass.h"
 #include "Pass/ShadowPass.h"
+#include "Pass/ForwardPass.h"
+#include "Pass/GeometryPass.h"
+#include "Pass/LightingPass.h"
 #include "Pass/ImGuiPass.h"
 
 #include "imgui_impl_win32.h"
@@ -56,10 +58,14 @@ private:
     RenderContext  m_renderCtx;
 
     // Pass
-    std::vector<IRenderPass*>    m_passes;
-    std::unique_ptr<ForwardPass> m_forwardPass;
-    std::unique_ptr<ShadowPass>  m_shadowPass;
-    std::unique_ptr<ImGuiPass>   m_imGuiPass;
+    std::vector<IRenderPass*>      m_passes;
+    std::unique_ptr<ShadowPass>    m_shadowPass;
+    std::unique_ptr<ForwardPass>   m_forwardPass;   // Forward 모드
+    std::unique_ptr<GeometryPass>  m_geometryPass;  // Deferred 모드
+    std::unique_ptr<LightingPass>  m_lightingPass;  // Deferred 모드
+    std::unique_ptr<ImGuiPass>     m_imGuiPass;
+
+    bool m_useDeferredRendering = true;
 
     // Scene
     SceneManager m_sceneManager;

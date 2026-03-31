@@ -12,6 +12,8 @@ enum ROOT_SIGNATURE_TYPE
     ROOT_SIGNATURE_TYPE_CBV,
     ROOT_SIGNATURE_TYPE_SHADOW,
     ROOT_SIGNATURE_TYPE_TEXTURE,
+    ROOT_SIGNATURE_TYPE_GBUFFER,
+    ROOT_SIGNATURE_TYPE_LIGHTING,
 };
 
 class RootSignature
@@ -28,6 +30,12 @@ public:
 
     // Resource = CBV + Shadow Map SRV + Albedo Texture SRV
     void CreateWithTexture(ID3D12Device* device);
+
+    // Resource = ObjectCB + PassCB + Albedo Texture SRV
+    void CreateWithGBuffer(ID3D12Device* device);
+
+    // Resource = PassCB + ShadowMap SRV + GBuffer SRVs x3
+    void CreateWithLighting(ID3D12Device* device);
 
 public: // Getter
     ID3D12RootSignature* Get() const;

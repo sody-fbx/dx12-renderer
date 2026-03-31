@@ -29,6 +29,19 @@ public:
                       , const std::wstring& vsPath
                       , DXGI_FORMAT depthFormat );
 
+    void CreateGBuffer( ID3D12Device* device
+                      , ID3D12RootSignature* rootSignature
+                      , const std::wstring& vsPath
+                      , const std::wstring& psPath
+                      , const DXGI_FORMAT rtFormats[3]
+                      , DXGI_FORMAT depthFormat );
+
+    void CreateLighting( ID3D12Device* device
+                       , ID3D12RootSignature* rootSignature
+                       , const std::wstring& vsPath
+                       , const std::wstring& psPath
+                       , DXGI_FORMAT backBufferFormat );
+
     ID3D12PipelineState* Get() const;
 
 private:

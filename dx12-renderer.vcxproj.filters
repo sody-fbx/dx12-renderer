@@ -147,6 +147,12 @@
     <ClCompile Include="src\Scene\SceneManager.cpp">
       <Filter>src\Scene</Filter>
     </ClCompile>
+    <ClCompile Include="src\Pass\GeometryPass.cpp">
+      <Filter>src\Pass</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Pass\LightingPass.cpp">
+      <Filter>src\Pass</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Core\D3DUtil.h">
@@ -281,6 +287,12 @@
     <ClInclude Include="include\ThirdParty\stb_image.h">
       <Filter>include\ThirdParty</Filter>
     </ClInclude>
+    <ClInclude Include="include\Pass\GeometryPass.h">
+      <Filter>include\Pass</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Pass\LightingPass.h">
+      <Filter>include\Pass</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="src\Shaders\Triangle.hlsl">
@@ -296,6 +308,12 @@
       <Filter>src\Shaders</Filter>
     </FxCompile>
     <FxCompile Include="src\Shaders\PBR_Tex.hlsl">
+      <Filter>src\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="src\Shaders\GBuffer.hlsl">
+      <Filter>src\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="src\Shaders\Lighting.hlsl">
       <Filter>src\Shaders</Filter>
     </FxCompile>
   </ItemGroup>
