@@ -56,8 +56,18 @@ Camera& Scene::GetCamera()
 }
 
 DirectionalLight& Scene::GetDirLight()
-{
-    return m_dirLight;
+{ 
+    return m_lights.Directional; 
+}
+
+Lights& Scene::GetLights() 
+{ 
+    return m_lights; 
+}
+
+const Lights& Scene::GetLights() const
+{ 
+    return m_lights; 
 }
 
 const std::vector<std::unique_ptr<RenderItem>>& Scene::GetRenderItems() const

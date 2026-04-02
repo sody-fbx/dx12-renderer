@@ -27,8 +27,19 @@ struct PassConstants
     float      Padding1    = 0.0f;   // 16바이트 정렬용
     XMFLOAT4   AmbientLight = { 0.1f, 0.1f, 0.1f, 1.0f };
 
+	// DirectionalLight
     DirectionalLight DirLight;
     XMFLOAT4X4 LightViewProj = {};
+
+    // PointLights
+    PointLight PointLights[MAX_POINT_LIGHTS] = {};
+    int        PointLightCount = 0;
+    XMFLOAT3   PaddingPL = {};   // 16바이트 정렬용
+
+    // SpotLights
+    SpotLight  SpotLights[MAX_SPOT_LIGHTS] = {};
+    int        SpotLightCount = 0;
+    XMFLOAT3   PaddingSL = {};   // 16바이트 정렬용
 
     PassConstants()
     {

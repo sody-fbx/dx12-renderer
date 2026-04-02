@@ -178,12 +178,12 @@ void Renderer::UpdateConstantBuffers()
     UINT frameIndex = m_swapChain.CurrentBackBufferIndex();
     auto& curFrame  = m_frameRes[frameIndex];
 
-    Scene*            scene = m_sceneManager.GetActiveScene();
-    Camera&           cam   = scene->GetCamera();
-    DirectionalLight& light = scene->GetDirLight();
+    Scene*             scene  = m_sceneManager.GetActiveScene();
+    Camera&            cam    = scene->GetCamera();
+    const Lights&      lights = scene->GetLights();
 
     // ShadowCB
-    XMMATRIX lightVP = light.GetLightViewProjMatrix();
+    XMMATRIX lightVP = lights.Directional.GetLightViewProjMatrix();
     ShadowPassConstants shadowData;
     XMStoreFloat4x4(&shadowData.LightViewProj, XMMatrixTranspose(lightVP));
     curFrame.ShadowCB->CopyData(0, shadowData);
@@ -198,8 +198,19 @@ void Renderer::UpdateConstantBuffers()
     XMStoreFloat4x4(&passData.Proj,          XMMatrixTranspose(proj));
     XMStoreFloat4x4(&passData.ViewProj,      XMMatrixTranspose(viewProj));
     XMStoreFloat4x4(&passData.LightViewProj, XMMatrixTranspose(lightVP));
-    passData.EyePos  = cam.GetPosition();
-    passData.DirLight = light;
+    passData.EyePos   = cam.GetPosition();
+    passData.DirLight = lights.Directional;
+
+    // PointLights
+    passData.PointLightCount = (int)lights.Points.size();
+    for (int i = 0; i < passData.PointLightCount; i++)
+        passData.PointLights[i] = lights.Points[i];
+
+    // SpotLights
+    passData.SpotLightCount = (int)lights.Spots.size();
+    for (int i = 0; i < passData.SpotLightCount; i++)
+        passData.SpotLights[i] = lights.Spots[i];
+
     curFrame.PassCB->CopyData(0, passData);
 
     // ObjectCB — 활성 Scene의 아이템만 갱신
@@ -239,12 +250,83 @@ void Renderer::DrawImGui()
     ImGui::Text("Camera: (%.1f, %.1f, %.1f)", camPos.x, camPos.y, camPos.z);
     ImGui::Separator();
 
-    // Light Controls
-    DirectionalLight& light = scene->GetDirLight();
+    // Directional Light
+    Lights& lights = scene->GetLights();
     ImGui::Text("Directional Light");
-    ImGui::DragFloat3("Direction", &light.Direction.x, 0.01f, -1.0f, 1.0f);
-    ImGui::ColorEdit3("Color", &light.Color.x);
-    ImGui::SliderFloat("Intensity", &light.Intensity, 0.0f, 5.0f);
+    ImGui::DragFloat3("Direction",     &lights.Directional.Direction.x, 0.01f, -1.0f, 1.0f);
+    ImGui::ColorEdit3("Dir Color",     &lights.Directional.Color.x);
+    ImGui::SliderFloat("Dir Intensity", &lights.Directional.Intensity, 0.0f, 5.0f);
+    ImGui::Separator();
+
+    // Point Lights
+    ImGui::Text("Point Lights  (%d / %d)", (int)lights.Points.size(), MAX_POINT_LIGHTS);
+    if ((int)lights.Points.size() < MAX_POINT_LIGHTS)
+        if (ImGui::Button("+ Add Point Light"))
+            lights.Points.push_back(PointLight{});
+
+    for (int i = 0; i < (int)lights.Points.size(); i++)
+    {
+        ImGui::PushID(i);
+        char header[32];
+        sprintf_s(header, "Point Light [%d]", i);
+
+        if (ImGui::CollapsingHeader(header))
+        {
+            PointLight& pl = lights.Points[i];
+            ImGui::DragFloat3("Position",      &pl.Position.x, 0.1f, -50.0f, 50.0f);
+            ImGui::DragFloat ("Radius",        &pl.Radius,     0.1f,   0.1f, 50.0f);
+            ImGui::ColorEdit3("PL Color",      &pl.Color.x);
+            ImGui::SliderFloat("PL Intensity", &pl.Intensity,  0.0f, 10.0f);
+
+            if (ImGui::Button("Remove"))
+            {
+                lights.Points.erase(lights.Points.begin() + i);
+                ImGui::PopID();
+                break;
+            }
+        }
+        ImGui::PopID();
+    }
+    ImGui::Separator();
+
+    // Spot Lights
+    ImGui::Text("Spot Lights  (%d / %d)", (int)lights.Spots.size(), MAX_SPOT_LIGHTS);
+    if ((int)lights.Spots.size() < MAX_SPOT_LIGHTS)
+        if (ImGui::Button("+ Add Spot Light"))
+            lights.Spots.push_back(SpotLight{});
+
+    for (int i = 0; i < (int)lights.Spots.size(); i++)
+    {
+        ImGui::PushID(1000 + i);
+        char header[32];
+        sprintf_s(header, "Spot Light [%d]", i);
+
+        if (ImGui::CollapsingHeader(header))
+        {
+            SpotLight& sl = lights.Spots[i];
+            ImGui::DragFloat3("Position",  &sl.Position.x,  0.1f, -50.0f, 50.0f);
+            ImGui::DragFloat3("Direction", &sl.Direction.x, 0.01f, -1.0f, 1.0f);
+            ImGui::DragFloat ("Radius",    &sl.Radius,      0.1f,   0.1f, 100.0f);
+
+            float innerDeg = acosf(sl.InnerCosAngle) * (180.0f / XM_PI);
+            float outerDeg = acosf(sl.OuterCosAngle) * (180.0f / XM_PI);
+            if (ImGui::SliderFloat("Inner Angle", &innerDeg, 1.0f, 89.0f))
+                sl.InnerCosAngle = cosf(innerDeg * XM_PI / 180.0f);
+            if (ImGui::SliderFloat("Outer Angle", &outerDeg, innerDeg + 0.5f, 90.0f))
+                sl.OuterCosAngle = cosf(outerDeg * XM_PI / 180.0f);
+
+            ImGui::ColorEdit3 ("SL Color",     &sl.Color.x);
+            ImGui::SliderFloat("SL Intensity", &sl.Intensity, 0.0f, 10.0f);
+
+            if (ImGui::Button("Remove"))
+            {
+                lights.Spots.erase(lights.Spots.begin() + i);
+                ImGui::PopID();
+                break;
+            }
+        }
+        ImGui::PopID();
+    }
     ImGui::Separator();
 
     // Render Stats

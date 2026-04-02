@@ -31,15 +31,18 @@ public:
     void SetCamera(Camera cam);
 
 public: // Getter
-    Camera&           GetCamera();
-    DirectionalLight& GetDirLight();
+    Camera&             GetCamera();
+    DirectionalLight&   GetDirLight();
+
+    Lights&             GetLights();
+    const Lights&       GetLights() const;
 
     const std::vector<std::unique_ptr<RenderItem>>& GetRenderItems() const;
     UINT GetObjectCount() const;
 
 protected:
-    Camera           m_camera;
-    DirectionalLight m_dirLight;
+    Camera      m_camera;
+    Lights      m_lights;
 
 private:
     void BuildRenderItems( const std::vector<RenderItemDesc>& items

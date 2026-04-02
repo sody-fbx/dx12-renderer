@@ -47,7 +47,10 @@ void DemoScene::OnActivate(float aspectRatio)
     cam.Initialize(5.0f, 45.0f, aspectRatio, 0.1f, 100.0f);
     SetCamera(cam);
 
-    GetDirLight().Direction = { 0.5f, -1.0f, 0.3f };
-    GetDirLight().Color     = { 1.0f, 1.0f, 0.9f  };
-    GetDirLight().Intensity = 1.0f;
+    m_lights.Directional.Direction = { 0.5f, -1.0f, 0.3f };
+    m_lights.Directional.Color     = { 1.0f, 1.0f, 0.9f  };
+    m_lights.Directional.Intensity = 1.0f;
+
+    m_lights.Points.clear();
+    m_lights.Spots.clear();
 }
