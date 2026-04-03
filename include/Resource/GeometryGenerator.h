@@ -32,4 +32,8 @@ namespace GeometryGenerator
     // Cylinder
     MeshData<VertexTex> CreateCylinder( float bottomRadius, float topRadius,
                                         float height, UINT sliceCount, UINT stackCount );
+
+    // 탄젠트 계산
+    void ComputeTangents( std::vector<VertexTex>& vertices
+                        , const std::vector<uint32_t>& indices );
 }

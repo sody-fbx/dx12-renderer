@@ -1,11 +1,12 @@
 // ═══════════════════════════════════════════════════════════════════
-//  PBR_Tex.hlsl — Albedo Texture + Blinn-Phong + Shadow Map
+//  PBR_Tex.hlsl — Albedo Texture + Normal Map + Blinn-Phong + Shadow Map
 //
 //  Root Parameter :
 //    [0] b0 ObjectCB
 //    [1] b1 PassCB (FPCB)
-//    [2] t0 Shadow Map    (SamplerComparisonState s0)
+//    [2] t0 Shadow Map     (SamplerComparisonState s0)
 //    [3] t1 Albedo Texture (SamplerState s1)
+//    [4] t2 Normal Map     (SamplerState s1)
 // ═══════════════════════════════════════════════════════════════════
 
 cbuffer ObjectCB : register(b0)
@@ -67,26 +68,29 @@ cbuffer FPCB : register(b1)
 };
 
 // t0 : Shadow Map
-Texture2D               gShadowMap    : register(t0);
+Texture2D               gShadowMap     : register(t0);
 SamplerComparisonState  gShadowSampler : register(s0);
 
-// t1 : Albedo Texture
-Texture2D               gAlbedoTex    : register(t1);
-SamplerState            gTexSampler   : register(s1);
+// t1 : Albedo Texture, t2 : Normal Map
+Texture2D               gAlbedoTex     : register(t1);
+Texture2D               gNormalMapTex  : register(t2);
+SamplerState            gTexSampler    : register(s1);
 
 struct VSInput
 {
-    float3 PosL    : POSITION;
-    float3 NormalL : NORMAL;
-    float2 TexC    : TEXCOORD;
+    float3 PosL     : POSITION;
+    float3 NormalL  : NORMAL;
+    float2 TexC     : TEXCOORD;
+    float3 TangentL : TANGENT;
 };
 
 struct VSOutput
 {
-    float4 PosH    : SV_POSITION;
-    float3 PosW    : POSITION;
-    float3 NormalW : NORMAL;
-    float2 TexC    : TEXCOORD;
+    float4 PosH     : SV_POSITION;
+    float3 PosW     : POSITION;
+    float3 NormalW  : NORMAL;
+    float2 TexC     : TEXCOORD;
+    float3 TangentW : TANGENT;
 };
 
 // ═══════════════════════════════════════════════════════════════════
@@ -96,11 +100,12 @@ VSOutput VSMain(VSInput input)
 {
     VSOutput output;
 
-    float4 posW    = mul(float4(input.PosL, 1.0f), gWorld);
-    output.PosW    = posW.xyz;
-    output.PosH    = mul(posW, gViewProj);
-    output.NormalW = mul(input.NormalL, (float3x3)gWorld);
-    output.TexC    = input.TexC;
+    float4 posW      = mul(float4(input.PosL, 1.0f), gWorld);
+    output.PosW      = posW.xyz;
+    output.PosH      = mul(posW, gViewProj);
+    output.NormalW   = mul(input.NormalL,  (float3x3)gWorld);
+    output.TangentW  = mul(input.TangentL, (float3x3)gWorld);
+    output.TexC      = input.TexC;
 
     return output;
 }
@@ -149,7 +154,16 @@ float4 PSMain(VSOutput input) : SV_TARGET
 {
     float3 albedo = gAlbedoTex.Sample(gTexSampler, input.TexC).rgb;
 
+    // TBN 보간 오차 보정
     float3 N = normalize(input.NormalW);
+    float3 T = normalize(input.TangentW - dot(input.TangentW, N) * N);
+    float3 B = cross(N, T);
+
+    // 노말맵 샘플링
+    float3 normalT = gNormalMapTex.Sample(gTexSampler, input.TexC).rgb * 2.0f - 1.0f;
+    float3x3 TBN   = float3x3(T, B, N);
+    N = normalize(mul(normalT, TBN));
+
     float3 V = normalize(gEyePos - input.PosW);
 
     // Directional Light

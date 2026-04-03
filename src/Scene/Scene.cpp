@@ -17,12 +17,13 @@ void Scene::BuildRenderItems( const std::vector<RenderItemDesc>& items
     UINT cbIndex = cbOffset;
 
     for (const auto& desc : items)
-        AddRenderItem(ctx, desc.MeshName, desc.TextureName, XMLoadFloat4x4(&desc.World), cbIndex);
+        AddRenderItem(ctx, desc.MeshName, desc.TextureName, desc.NormalMapName, XMLoadFloat4x4(&desc.World), cbIndex);
 }
 
 void Scene::AddRenderItem( const RenderContext& rctx
                          , const std::string& meshName
                          , const std::string& texName
+                         , const std::string& normalMapName
                          , XMMATRIX world
                          , UINT& cbIndex )
 {
@@ -37,10 +38,14 @@ void Scene::AddRenderItem( const RenderContext& rctx
         return;
     }
 
-    auto item        = std::make_unique<RenderItem>();
-    item->MeshRef    = mesh;
-    item->TexRef     = tex;
-    item->ObjCBIndex = cbIndex++;
+    // 노말맵: 이름이 있으면 룩업, 없으면 nullptr
+    Texture* normalMap = normalMapName.empty() ? nullptr : rctx.Textures->Get(normalMapName);
+
+    auto item           = std::make_unique<RenderItem>();
+    item->MeshRef       = mesh;
+    item->TexRef        = tex;
+    item->NormalMapRef  = normalMap;
+    item->ObjCBIndex    = cbIndex++;
     XMStoreFloat4x4(&item->World, world);
     m_renderItems.push_back(std::move(item));
 }

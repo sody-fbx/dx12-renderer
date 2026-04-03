@@ -24,6 +24,7 @@ public:
 
 public: // Getter
     Texture* Get(const std::string& name) const;
+    UINT     GetFlatNormalSRVIndex() const { return m_flatNormal->SRVIndex; }
 
 private:
     // 로드 요청 목록 (name, path)
@@ -32,6 +33,8 @@ private:
     std::unordered_map<std::string, std::unique_ptr<Texture>> m_textures;
     // 흰색 1×1 Fallback
     std::unique_ptr<Texture> m_fallback;
+    // Flat Normal 1×1 Fallback
+    std::unique_ptr<Texture> m_flatNormal;
 
     bool m_built = false;
 };

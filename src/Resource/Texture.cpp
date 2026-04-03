@@ -147,6 +147,18 @@ void Texture::CreateWhite( ID3D12Device* device
     CreateSRV(device, srvHandle);
 }
 
+void Texture::CreateFlatNormal( ID3D12Device* device
+                              , ID3D12GraphicsCommandList* cmdList
+                              , D3D12_CPU_DESCRIPTOR_HANDLE srvHandle )
+{
+    // 탄젠트 공간 (0, 0, 1) -> R8G8B8A8 인코딩
+    const uint8_t pixel[4] = { 128, 128, 255, 255 };
+
+    UploadTexture2D(device, cmdList, pixel, 1, 1, m_textureGPU, m_uploadBuffer);
+
+    CreateSRV(device, srvHandle);
+}
+
 void Texture::ReleaseUploadBuffer()
 { 
     m_uploadBuffer.Reset(); 

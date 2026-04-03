@@ -79,6 +79,15 @@ void ForwardPass::Execute(const FrameContext& ctx)
             cmdList->SetGraphicsRootDescriptorTable(3, srvHeap->GetGPUHandle(item->TexRef->SRVIndex));
         }
 
+        // [4] Normal Map
+        if (srvHeap != nullptr && m_renderCtx != nullptr)
+        {
+            UINT normalSRV = (item->NormalMapRef != nullptr)
+                           ? item->NormalMapRef->SRVIndex
+                           : m_renderCtx->Textures->GetFlatNormalSRVIndex();
+            cmdList->SetGraphicsRootDescriptorTable(4, srvHeap->GetGPUHandle(normalSRV));
+        }
+
         // Mesh 바인딩
         auto vertexView = item->MeshRef->VertexBufferView();
         auto indexView  = item->MeshRef->IndexBufferView();

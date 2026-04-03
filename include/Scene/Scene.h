@@ -48,9 +48,11 @@ private:
     void BuildRenderItems( const std::vector<RenderItemDesc>& items
                          , const RenderContext& ctx
                          , UINT cbOffset );
+
     void AddRenderItem( const RenderContext& ctx
                       , const std::string& meshName
                       , const std::string& texName
+                      , const std::string& normalMapName
                       , XMMATRIX world
                       , UINT& cbIndex );
 

@@ -18,6 +18,10 @@ public:
                     , ID3D12GraphicsCommandList* cmdList
                     , D3D12_CPU_DESCRIPTOR_HANDLE srvHandle );
 
+    void CreateFlatNormal( ID3D12Device* device
+                         , ID3D12GraphicsCommandList* cmdList
+                         , D3D12_CPU_DESCRIPTOR_HANDLE srvHandle );
+
     void ReleaseUploadBuffer();
 
     bool IsValid() const;

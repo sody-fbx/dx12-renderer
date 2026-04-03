@@ -24,18 +24,25 @@ SceneDesc DemoScene::CreateSceneDesc() const
 
     desc.Textures =
     {
+        // Albedo
         { "brick", L"assets/brick.png" },
         { "stone", L"assets/stone.png" },
         { "tile",  L"assets/tile.png"  },
         { "wood",  L"assets/wood.png"  },
+
+        // Normal Maps
+        { "brick_normal", L"assets/brick_normal.png" },
+        { "stone_normal", L"assets/stone_normal.png" },
+        { "tile_normal",  L"assets/tile_normal.png"  },
     };
 
+    // RenderItemDesc(mesh, albedo, world, normalMap="")
     desc.Items =
     {
-        { "Grid",     "tile",  XMMatrixIdentity()                        },
-        { "Box",      "brick", XMMatrixTranslation( 0.0f, 0.5f,  0.0f)  },
-        { "Sphere",   "stone", XMMatrixTranslation( 3.0f, 0.5f,  0.0f)  },
-        { "Cylinder", "wood",  XMMatrixTranslation(-3.0f, 0.75f, 0.0f)  },
+        { "Grid",     "tile",  XMMatrixIdentity(),                        "tile_normal"  },
+        { "Box",      "brick", XMMatrixTranslation( 0.0f, 0.5f,  0.0f),  "brick_normal" },
+        { "Sphere",   "stone", XMMatrixTranslation( 3.0f, 0.5f,  0.0f),  "stone_normal" },
+        { "Cylinder", "wood",  XMMatrixTranslation(-3.0f, 0.75f, 0.0f)                  },
     };
 
     return desc;

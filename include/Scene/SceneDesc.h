@@ -53,12 +53,14 @@ struct RenderItemDesc
 {
     std::string MeshName;
     std::string TextureName;
+    std::string NormalMapName;
     XMFLOAT4X4  World;
 
     RenderItemDesc( const std::string& mesh
                   , const std::string& tex
-                  , XMMATRIX world = XMMatrixIdentity())
-                  : MeshName(mesh), TextureName(tex)
+                  , XMMATRIX world = XMMatrixIdentity()
+                  , const std::string& normalMap = "" )
+                  : MeshName(mesh), TextureName(tex), NormalMapName(normalMap)
     {
         XMStoreFloat4x4(&World, world);
     }

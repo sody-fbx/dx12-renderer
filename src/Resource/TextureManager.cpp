@@ -23,6 +23,11 @@ void TextureManager::BuildAll( ID3D12Device* device
     m_fallback->SRVIndex = srvHeap.AllocateIndex();
     m_fallback->CreateWhite(device, cmdList, srvHeap.GetCPUHandle(m_fallback->SRVIndex));
 
+    // [1] Flat Normal: (128, 128, 255, 255) 1×1 텍스처
+    m_flatNormal = std::make_unique<Texture>();
+    m_flatNormal->SRVIndex = srvHeap.AllocateIndex();
+    m_flatNormal->CreateFlatNormal(device, cmdList, srvHeap.GetCPUHandle(m_flatNormal->SRVIndex));
+
     // [1..N] 요청된 텍스처
     for (auto& [name, path] : m_requests)
     {
@@ -54,6 +59,9 @@ void TextureManager::ReleaseUploadBuffers()
 {
     if (m_fallback)
         m_fallback->ReleaseUploadBuffer();
+
+    if (m_flatNormal)
+        m_flatNormal->ReleaseUploadBuffer();
 
     for (auto& [name, tex] : m_textures)
         tex->ReleaseUploadBuffer();

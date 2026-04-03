@@ -93,6 +93,15 @@ void GeometryPass::Execute(const FrameContext& ctx)
         if (srvHeap && texMgr && item->TexRef)
             cmdList->SetGraphicsRootDescriptorTable(2, srvHeap->GetGPUHandle(item->TexRef->SRVIndex));
 
+        // [3] Normal Map
+        if (srvHeap)
+        {
+            UINT normalSRV = (item->NormalMapRef != nullptr)
+                           ? item->NormalMapRef->SRVIndex
+                           : m_renderCtx->Textures->GetFlatNormalSRVIndex();
+            cmdList->SetGraphicsRootDescriptorTable(3, srvHeap->GetGPUHandle(normalSRV));
+        }
+
         auto vertexView = item->MeshRef->VertexBufferView();
         auto indexView  = item->MeshRef->IndexBufferView();
         cmdList->IASetVertexBuffers(0, 1, &vertexView);

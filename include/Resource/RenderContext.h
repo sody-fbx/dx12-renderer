@@ -11,7 +11,7 @@
 
 struct RenderContext
 {
-    DescriptorHeap* SrvHeap     = nullptr;
-    MeshManager* Meshes         = nullptr;
-    TextureManager* Textures    = nullptr;
+    DescriptorHeap* SrvHeap            = nullptr;
+    MeshManager*    Meshes             = nullptr;
+    TextureManager* Textures           = nullptr;
 };

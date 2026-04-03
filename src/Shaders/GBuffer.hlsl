@@ -5,7 +5,8 @@
 //  Root Parameters:
 //    [0] b0 ObjectCB
 //    [1] b1 PassCB
-//    [2] t0 Albedo Texture (SamplerState s0)
+//    [2] t0 Albedo Texture  (SamplerState s0)
+//    [3] t1 Normal Map      (SamplerState s0)
 //
 //  Outputs:
 //    SV_TARGET0 : Albedo   (R8G8B8A8_UNORM)
@@ -39,22 +40,25 @@ cbuffer PassCB : register(b1)
     float4x4 gLightViewProj;
 };
 
-Texture2D    gAlbedoTex  : register(t0);
-SamplerState gTexSampler : register(s0);
+Texture2D    gAlbedoTex   : register(t0);
+Texture2D    gNormalMapTex : register(t1);
+SamplerState gTexSampler  : register(s0);
 
 struct VSInput
 {
-    float3 PosL    : POSITION;
-    float3 NormalL : NORMAL;
-    float2 TexC    : TEXCOORD;
+    float3 PosL     : POSITION;
+    float3 NormalL  : NORMAL;
+    float2 TexC     : TEXCOORD;
+    float3 TangentL : TANGENT;
 };
 
 struct VSOutput
 {
-    float4 PosH    : SV_POSITION;
-    float3 PosW    : POSITION;
-    float3 NormalW : NORMAL;
-    float2 TexC    : TEXCOORD;
+    float4 PosH     : SV_POSITION;
+    float3 PosW     : POSITION;
+    float3 NormalW  : NORMAL;
+    float2 TexC     : TEXCOORD;
+    float3 TangentW : TANGENT;
 };
 
 struct GBufferOutput
@@ -70,11 +74,12 @@ struct GBufferOutput
 VSOutput VSMain(VSInput input)
 {
     VSOutput o;
-    float4 posW = mul(float4(input.PosL, 1.0f), gWorld);
-    o.PosW    = posW.xyz;
-    o.PosH    = mul(posW, gViewProj);
-    o.NormalW = mul(input.NormalL, (float3x3)gWorld);
-    o.TexC    = input.TexC;
+    float4 posW  = mul(float4(input.PosL, 1.0f), gWorld);
+    o.PosW       = posW.xyz;
+    o.PosH       = mul(posW, gViewProj);
+    o.NormalW    = mul(input.NormalL,  (float3x3)gWorld);
+    o.TangentW   = mul(input.TangentL, (float3x3)gWorld);
+    o.TexC       = input.TexC;
     return o;
 }
 
@@ -85,11 +90,24 @@ GBufferOutput PSMain(VSOutput input)
 {
     GBufferOutput o;
 
+    // Albedo
     float3 albedo = gAlbedoTex.Sample(gTexSampler, input.TexC).rgb;
-    float3 N      = normalize(input.NormalW);
+
+    // TBN 보간 오차 보정
+    float3 N = normalize(input.NormalW);
+    float3 T = normalize(input.TangentW - dot(input.TangentW, N) * N);
+    float3 B = cross(N, T);
+
+    // 노말맵 샘플링
+    float3 normalT = gNormalMapTex.Sample(gTexSampler, input.TexC).rgb * 2.0f - 1.0f;
+
+    // 탄젠트 공간 -> 월드 공간 변환
+    //  row(0)=T, row(1)=B, row(2)=N 으로 구성된 행렬에 행벡터 곱
+    float3x3 TBN    = float3x3(T, B, N);
+    float3   normalW = normalize(mul(normalT, TBN));
 
     o.Albedo   = float4(albedo, 1.0f);
-    o.Normal   = float4(N * 0.5f + 0.5f, 0.0f);  // [-1,1] → [0,1] 패킹
+    o.Normal   = float4(normalW * 0.5f + 0.5f, 0.0f);  // [-1,1] → [0,1] 패킹
     o.WorldPos = float4(input.PosW, 1.0f);
 
     return o;

@@ -137,7 +137,7 @@ void RootSignature::CreateWithShadow(ID3D12Device* device)
 
 void RootSignature::CreateWithTexture(ID3D12Device* device)
 {
-    D3D12_ROOT_PARAMETER rootParams[4] = {};
+    D3D12_ROOT_PARAMETER rootParams[5] = {};
 
     // [0] ObjectCB — b0 (VS)
     rootParams[0].ParameterType             = D3D12_ROOT_PARAMETER_TYPE_CBV;
@@ -177,6 +177,19 @@ void RootSignature::CreateWithTexture(ID3D12Device* device)
     rootParams[3].DescriptorTable.pDescriptorRanges     = &texRange;
     rootParams[3].ShaderVisibility                      = D3D12_SHADER_VISIBILITY_PIXEL;
 
+    // [4] Normal Map SRV — t2 (PS)
+    D3D12_DESCRIPTOR_RANGE normalRange = {};
+    normalRange.RangeType                               = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+    normalRange.NumDescriptors                          = 1;
+    normalRange.BaseShaderRegister                      = 2;    // t2
+    normalRange.RegisterSpace                           = 0;
+    normalRange.OffsetInDescriptorsFromTableStart       = 0;
+
+    rootParams[4].ParameterType                         = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+    rootParams[4].DescriptorTable.NumDescriptorRanges   = 1;
+    rootParams[4].DescriptorTable.pDescriptorRanges     = &normalRange;
+    rootParams[4].ShaderVisibility                      = D3D12_SHADER_VISIBILITY_PIXEL;
+
     // Static Samplers
     D3D12_STATIC_SAMPLER_DESC samplers[2] = {};
 
@@ -191,7 +204,7 @@ void RootSignature::CreateWithTexture(ID3D12Device* device)
     samplers[0].RegisterSpace       = 0;
     samplers[0].ShaderVisibility    = D3D12_SHADER_VISIBILITY_PIXEL;
 
-    // s1 — Albedo Texture Wrap Sampler (Anisotropic)
+    // s1 — Albedo + Normal Map Wrap Sampler (Anisotropic)
     samplers[1].Filter              = D3D12_FILTER_ANISOTROPIC;
     samplers[1].AddressU            = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
     samplers[1].AddressV            = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
@@ -206,7 +219,7 @@ void RootSignature::CreateWithTexture(ID3D12Device* device)
 
     // Root Signature 생성
     D3D12_ROOT_SIGNATURE_DESC desc = {};
-    desc.NumParameters      = 4;
+    desc.NumParameters      = 5;
     desc.pParameters        = rootParams;
     desc.NumStaticSamplers  = 2;
     desc.pStaticSamplers    = samplers;
@@ -228,7 +241,7 @@ void RootSignature::CreateWithTexture(ID3D12Device* device)
 
 void RootSignature::CreateWithGBuffer(ID3D12Device* device)
 {
-    D3D12_ROOT_PARAMETER rootParams[3] = {};
+    D3D12_ROOT_PARAMETER rootParams[4] = {};
 
     // [0] ObjectCB — b0 (VS)
     rootParams[0].ParameterType             = D3D12_ROOT_PARAMETER_TYPE_CBV;
@@ -255,7 +268,20 @@ void RootSignature::CreateWithGBuffer(ID3D12Device* device)
     rootParams[2].DescriptorTable.pDescriptorRanges = &texRange;
     rootParams[2].ShaderVisibility                  = D3D12_SHADER_VISIBILITY_PIXEL;
 
-    // s0 — Anisotropic Wrap (Albedo Texture)
+    // [3] Normal Map SRV — t1 (PS)
+    D3D12_DESCRIPTOR_RANGE normalRange = {};
+    normalRange.RangeType                              = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+    normalRange.NumDescriptors                         = 1;
+    normalRange.BaseShaderRegister                     = 1;    // t1
+    normalRange.RegisterSpace                          = 0;
+    normalRange.OffsetInDescriptorsFromTableStart       = 0;
+
+    rootParams[3].ParameterType                        = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+    rootParams[3].DescriptorTable.NumDescriptorRanges  = 1;
+    rootParams[3].DescriptorTable.pDescriptorRanges    = &normalRange;
+    rootParams[3].ShaderVisibility                     = D3D12_SHADER_VISIBILITY_PIXEL;
+
+    // s0 — Anisotropic Wrap (Albedo + Normal Map)
     D3D12_STATIC_SAMPLER_DESC sampler = {};
     sampler.Filter           = D3D12_FILTER_ANISOTROPIC;
     sampler.AddressU         = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
@@ -270,7 +296,7 @@ void RootSignature::CreateWithGBuffer(ID3D12Device* device)
     sampler.ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 
     D3D12_ROOT_SIGNATURE_DESC desc = {};
-    desc.NumParameters      = 3;
+    desc.NumParameters      = 4;
     desc.pParameters        = rootParams;
     desc.NumStaticSamplers  = 1;
     desc.pStaticSamplers    = &sampler;

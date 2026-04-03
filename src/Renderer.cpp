@@ -63,9 +63,9 @@ void Renderer::Initialize(HWND hwnd, int width, int height)
 
 void Renderer::BuildRenderContext()
 {
-    m_renderCtx.SrvHeap  = &m_srvHeap;
-    m_renderCtx.Meshes   = &m_meshManager;
-    m_renderCtx.Textures = &m_texManager;
+    m_renderCtx.SrvHeap            = &m_srvHeap;
+    m_renderCtx.Meshes             = &m_meshManager;
+    m_renderCtx.Textures           = &m_texManager;
 }
 
 void Renderer::BuildPasses()

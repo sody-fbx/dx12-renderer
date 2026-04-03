@@ -15,7 +15,8 @@ struct RenderItem
     Mesh* MeshRef = nullptr;
 
     // 참조하는 Texture
-    Texture* TexRef = nullptr;
+    Texture* TexRef       = nullptr;
+    Texture* NormalMapRef = nullptr;
 
     // CB에서 해당 오브젝트의 인덱스
     UINT ObjCBIndex = 0;
